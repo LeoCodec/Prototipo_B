@@ -1,0 +1,199 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Captura móvil{% endblock %}
+
+{% block content %}
+
+<div class="mobile-shell">
+
+    <section class="mobile-head">
+
+        <span class="eyebrow">MODO CELULAR</span>
+
+        <h1>Capturar documento</h1>
+
+        <p>
+            {{ study.folio }} · {{ study.display_name }}
+        </p>
+
+    </section>
+
+
+    <section class="mobile-card">
+
+        <div class="quality-banner quality-ready" id="quality-banner">
+
+            <span class="quality-light"></span>
+
+            <div>
+                <strong>Preparado para capturar</strong>
+                <small>
+                    Coloque una sola hoja dentro del recuadro.
+                </small>
+            </div>
+
+        </div>
+
+
+        <div class="camera-frame">
+
+            <div class="camera-corner c1"></div>
+            <div class="camera-corner c2"></div>
+            <div class="camera-corner c3"></div>
+            <div class="camera-corner c4"></div>
+
+            <div class="paper-guide">
+
+                <div class="paper-icon">📄</div>
+
+                <strong>Página del estudio</strong>
+
+                <small>
+                    Procure que los cuatro bordes
+                    sean visibles.
+                </small>
+
+            </div>
+
+            <div class="camera-caption">
+                Centre la hoja · evite sombras · mantenga el teléfono estable
+            </div>
+
+        </div>
+
+
+        <div class="camera-tips">
+
+            <div>
+                <span>💡</span>
+                <strong>Iluminación</strong>
+                <small>Evite zonas oscuras.</small>
+            </div>
+
+            <div>
+                <span>📐</span>
+                <strong>Encuadre</strong>
+                <small>Capture la hoja completa.</small>
+            </div>
+
+            <div>
+                <span>🔍</span>
+                <strong>Enfoque</strong>
+                <small>El texto debe verse nítido.</small>
+            </div>
+
+        </div>
+
+
+        <form method="POST"
+              enctype="multipart/form-data"
+              id="capture-form"
+              class="capture-form">
+
+            <label for="photo"
+                   class="capture-main-button">
+
+                <span>📷</span>
+
+                <div>
+                    <strong>Tomar fotografía</strong>
+                    <small>
+                        Utilizar cámara trasera
+                    </small>
+                </div>
+
+            </label>
+
+            <input
+                id="photo"
+                name="photo"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                required>
+
+
+            <div class="preview-wrap hidden" id="preview-wrap">
+
+                <div class="preview-header">
+                    <strong>Vista previa</strong>
+
+                    <button
+                        type="button"
+                        id="clear-photo"
+                        class="text-button">
+                        Repetir fotografía
+                    </button>
+                </div>
+
+                <img
+                    id="photo-preview"
+                    class="photo-preview"
+                    alt="Vista previa de la fotografía">
+
+            </div>
+
+
+            <button type="submit"
+                    class="btn btn-primary btn-large btn-full">
+
+                Analizar y guardar página
+
+            </button>
+
+        </form>
+
+
+        <div class="processing-box hidden"
+             id="processing-message">
+
+            <div class="spinner"></div>
+
+            <strong>Analizando fotografía…</strong>
+
+            <small>
+                OpenCV revisará enfoque e iluminación antes del OCR.
+            </small>
+
+        </div>
+
+    </section>
+
+
+    <section class="quality-help">
+
+        <article class="quality-help-card">
+            <span class="traffic green"></span>
+            <div>
+                <strong>Verde · adecuada</strong>
+                <small>La imagen puede continuar.</small>
+            </div>
+        </article>
+
+        <article class="quality-help-card">
+            <span class="traffic yellow"></span>
+            <div>
+                <strong>Amarillo · revisar</strong>
+                <small>Puede mejorar enfoque o iluminación.</small>
+            </div>
+        </article>
+
+        <article class="quality-help-card">
+            <span class="traffic red"></span>
+            <div>
+                <strong>Rojo · repetir</strong>
+                <small>No conviene procesar esta fotografía.</small>
+            </div>
+        </article>
+
+    </section>
+
+
+    <a href="/study/{{ study.id }}"
+       class="back-link">
+        ← Volver al detalle del caso
+    </a>
+
+</div>
+
+{% endblock %}

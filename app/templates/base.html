@@ -1,18 +1,135 @@
 ﻿<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Prototipado B{% endblock %} · IPPLIAP</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#355f00">
+    <title>{% block title %}Prototipo B{% endblock %} · IPPLIAP</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/app.css') }}">
 </head>
 <body>
-<header class="topbar"><div class="brand">IPPLIAP <small>Prototipado B</small></div><nav><a href="{{ url_for('main.index') }}">Inicio</a></nav></header>
-<main class="container">
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}
-{% endwith %}
-{% block content %}{% endblock %}
-</main>
+
+<div class="app-layout">
+
+    <aside class="sidebar">
+
+        <a href="/" class="side-brand">
+            <img
+                src="{{ url_for('static', filename='img/ippliap-mark.png') }}"
+                alt="IPPLIAP"
+                class="side-logo">
+
+            <div>
+                <strong>IPPLIAP</strong>
+                <small>Prototipo B</small>
+            </div>
+        </a>
+
+        <div class="side-section-label">PILOTO EXPERIMENTAL</div>
+
+        <nav class="side-nav">
+            <a href="/" class="side-link">
+                <i class="bi bi-grid-1x2"></i><span>Inicio</span>
+            </a>
+
+            <a href="/#new-case" class="side-link">
+                <i class="bi bi-file-earmark-plus"></i><span>Nuevo caso</span>
+            </a>
+
+            <a href="/#cases" class="side-link">
+                <i class="bi bi-folder2-open"></i><span>Casos</span>
+            </a>
+
+            <a href="/#flow" class="side-link">
+                <i class="bi bi-camera"></i><span>Captura</span>
+            </a>
+
+            <a href="/#flow" class="side-link">
+                <i class="bi bi-cpu"></i><span>Procesamiento</span>
+            </a>
+
+            <a href="/#flow" class="side-link">
+                <i class="bi bi-pencil-square"></i><span>Revisión OCR</span>
+            </a>
+
+            <a href="/#flow" class="side-link">
+                <i class="bi bi-file-earmark-spreadsheet"></i><span>Excel</span>
+            </a>
+        </nav>
+
+        <div class="side-info">
+            <i class="bi bi-person-check"></i>
+            <div>
+                <strong>Apoyo humano</strong>
+                <span>El sistema no sustituye la valoración institucional.</span>
+            </div>
+        </div>
+
+    </aside>
+
+
+    <section class="app-content">
+
+        <header class="topbar">
+
+            <div class="mobile-brand">
+                <img
+                    src="{{ url_for('static', filename='img/ippliap-mark.png') }}"
+                    alt="IPPLIAP">
+
+                <div>
+                    <strong>IPPLIAP</strong>
+                    <small>Prototipo B</small>
+                </div>
+            </div>
+
+            <div class="topbar-copy">
+                <span class="topbar-kicker">DIGITALIZACIÓN ASISTIDA</span>
+                <strong>{% block page_name %}Estudio Socioeconómico{% endblock %}</strong>
+            </div>
+
+            <span class="pilot-chip">
+                <span class="pilot-dot"></span>
+                Piloto activo
+            </span>
+
+        </header>
+
+
+        <main class="page-shell">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <section class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </section>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+
+        </main>
+
+
+        <footer class="site-footer">
+            <span>Instituto Pedagógico para Problemas del Lenguaje, I.A.P.</span>
+            <span>Prototipo B · Captura · OpenCV · OCR · Revisión · Excel</span>
+        </footer>
+
+    </section>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
 </body>
 </html>

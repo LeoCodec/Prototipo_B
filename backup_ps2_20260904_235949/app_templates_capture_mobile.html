@@ -1,0 +1,14 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<section class="mobile-card">
+<h1>Modo captura</h1><p><strong>{{ study.folio }}</strong> · {{ study.student_name }}</p>
+<div class="instructions">Coloca una sola hoja dentro del encuadre. Si el indicador sale rojo o amarillo, repite la fotografía.</div>
+<form method="post" enctype="multipart/form-data">
+<label class="capture-button">📷 Tomar / seleccionar fotografía<input type="file" name="document" accept="image/*" capture="environment" required hidden></label>
+<button class="btn primary full">Procesar página</button>
+</form>
+</section>
+<section class="card"><h2>Páginas capturadas</h2>
+{% for img in study.images %}<div class="page-row quality-{{ img.quality_status|lower }}"><div><strong>Página {{ img.page_number }}</strong><br><small>{{ img.filename }}</small><br><span>Desenfoque {{ img.blur_score }} · Brillo {{ img.brightness_score }}</span></div><div><span class="badge {{ img.quality_status|lower }}">{{ img.quality_status }}</span><form method="post" action="{{ url_for('capture.delete_image', study_id=study.id, image_id=img.id) }}"><button class="link-danger">Eliminar y repetir</button></form></div></div>{% else %}<p>Aún no has capturado páginas.</p>{% endfor %}
+<div class="actions"><a class="btn" href="{{ url_for('main.index') }}">Salir</a><a class="btn primary" href="{{ url_for('review.review_study', study_id=study.id) }}">Terminé · revisar</a></div></section>
+{% endblock %}

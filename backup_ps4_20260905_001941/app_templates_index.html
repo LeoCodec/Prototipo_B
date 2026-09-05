@@ -1,0 +1,276 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+
+    <div class="hero-copy">
+
+        <span class="eyebrow hero-eyebrow">
+            SISTEMA B · PILOTO EXPERIMENTAL
+        </span>
+
+        <h1>
+            Digitalización asistida del
+            <span>Estudio Socioeconómico</span>
+        </h1>
+
+        <p>
+            Captura desde celular, control de calidad con OpenCV,
+            extracción OCR, revisión humana y exportación a Excel.
+        </p>
+
+        <div class="hero-tags">
+            <span><i class="bi bi-phone"></i> Captura móvil</span>
+            <span><i class="bi bi-cpu"></i> OpenCV</span>
+            <span><i class="bi bi-search"></i> OCR</span>
+            <span><i class="bi bi-pencil-square"></i> Revisión</span>
+            <span><i class="bi bi-file-earmark-spreadsheet"></i> Excel</span>
+        </div>
+
+    </div>
+
+
+    <div class="hero-visual">
+
+        <div class="flow-node">
+            <i class="bi bi-file-earmark-text flow-icon"></i>
+            <small>Formato físico</small>
+        </div>
+
+        <i class="bi bi-arrow-right flow-arrow"></i>
+
+        <div class="flow-node">
+            <i class="bi bi-phone flow-icon"></i>
+            <small>Fotografía</small>
+        </div>
+
+        <i class="bi bi-arrow-right flow-arrow"></i>
+
+        <div class="flow-node">
+            <i class="bi bi-cpu flow-icon"></i>
+            <small>Procesamiento</small>
+        </div>
+
+        <i class="bi bi-arrow-right flow-arrow"></i>
+
+        <div class="flow-node">
+            <i class="bi bi-file-earmark-spreadsheet flow-icon"></i>
+            <small>Excel</small>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="section intro-grid">
+
+    <article class="action-card action-card-primary">
+
+        <div class="action-icon">
+            <i class="bi bi-plus-lg"></i>
+        </div>
+
+        <div>
+            <span class="eyebrow">NUEVA PRUEBA</span>
+            <h2>Crear caso piloto</h2>
+
+            <p>
+                Utiliza un identificador ficticio para iniciar una nueva
+                sesión de captura y validar el flujo del prototipo.
+            </p>
+        </div>
+
+        <form method="POST" class="create-form">
+
+            <label for="display_name">
+                Nombre o identificador ficticio
+            </label>
+
+            <input
+                id="display_name"
+                name="display_name"
+                placeholder="Ej. Caso Demo 01"
+                autocomplete="off"
+                required>
+
+            <button type="submit" class="btn btn-primary btn-large">
+                <i class="bi bi-phone"></i>
+                Crear y abrir modo celular
+            </button>
+
+        </form>
+
+    </article>
+
+
+    <article class="action-card">
+
+        <div class="action-icon secondary">
+            <i class="bi bi-phone"></i>
+        </div>
+
+        <span class="eyebrow">MODO CELULAR</span>
+
+        <h2>Captura simplificada</h2>
+
+        <p>
+            El teléfono se utiliza principalmente para tomar las fotografías
+            de cada hoja. La revisión completa puede continuar en computadora.
+        </p>
+
+        <ul class="check-list">
+            <li>Encuadre por hoja.</li>
+            <li>Vista previa inmediata.</li>
+            <li>Repetición de la fotografía.</li>
+            <li>Control de iluminación y enfoque.</li>
+        </ul>
+
+    </article>
+
+</section>
+
+
+<section class="process-strip">
+
+    <div class="process-item">
+        <span>01</span>
+        <strong><i class="bi bi-folder-plus"></i> Crear caso</strong>
+        <small>Folio automático</small>
+    </div>
+
+    <i class="bi bi-chevron-right process-arrow"></i>
+
+    <div class="process-item">
+        <span>02</span>
+        <strong><i class="bi bi-camera"></i> Fotografiar</strong>
+        <small>Página por página</small>
+    </div>
+
+    <i class="bi bi-chevron-right process-arrow"></i>
+
+    <div class="process-item">
+        <span>03</span>
+        <strong><i class="bi bi-cpu"></i> Analizar</strong>
+        <small>OpenCV + OCR</small>
+    </div>
+
+    <i class="bi bi-chevron-right process-arrow"></i>
+
+    <div class="process-item">
+        <span>04</span>
+        <strong><i class="bi bi-pencil-square"></i> Revisar</strong>
+        <small>Confirmación humana</small>
+    </div>
+
+    <i class="bi bi-chevron-right process-arrow"></i>
+
+    <div class="process-item">
+        <span>05</span>
+        <strong><i class="bi bi-file-earmark-arrow-down"></i> Exportar</strong>
+        <small>Excel de prueba</small>
+    </div>
+
+</section>
+
+
+<section class="section">
+
+    <div class="section-heading">
+
+        <div>
+            <span class="eyebrow">EXPEDIENTES DE PRUEBA</span>
+            <h2>Casos registrados</h2>
+        </div>
+
+        <span class="counter">
+            <i class="bi bi-archive"></i>
+            {{ studies|length if studies else 0 }} casos
+        </span>
+
+    </div>
+
+
+    {% if studies %}
+
+        <div class="study-grid">
+
+            {% for study in studies %}
+
+                <article class="study-card">
+
+                    <div class="study-card-top">
+
+                        <div>
+                            <span class="folio">{{ study.folio }}</span>
+                            <h3>{{ study.display_name }}</h3>
+                        </div>
+
+                        <span class="study-status">
+                            <i class="bi bi-record-circle"></i>
+                            {{ study.status }}
+                        </span>
+
+                    </div>
+
+                    <div class="study-meta">
+
+                        <div>
+                            <span>Estado</span>
+                            <strong>{{ study.status }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Tipo</span>
+                            <strong>Piloto</strong>
+                        </div>
+
+                    </div>
+
+                    <div class="study-actions">
+
+                        <a href="/study/{{ study.id }}"
+                           class="btn">
+                            <i class="bi bi-folder2-open"></i>
+                            Ver detalle
+                        </a>
+
+                        <a href="/capture/{{ study.id }}/mobile"
+                           class="btn btn-primary">
+                            <i class="bi bi-camera"></i>
+                            Capturar
+                        </a>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="bi bi-folder2-open"></i>
+            </div>
+
+            <h3>No hay casos todavía</h3>
+
+            <p>
+                Crea el primer caso de prueba para comenzar
+                la validación del Prototipo B.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

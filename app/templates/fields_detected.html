@@ -1,0 +1,37 @@
+﻿{% extends "base.html" %}
+{% block title %}Campos detectados{% endblock %}
+{% block page_name %}Extracción por campos{% endblock %}
+
+{% block content %}
+<section class="page-title-card">
+    <div>
+        <span class="eyebrow">PS7 · EXTRACCIÓN ESTRUCTURADA</span>
+        <h1>Campos detectados</h1>
+        <p>{{ study.folio }} · {{ study.student_name }}</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('fields.run', study_id=study.id) }}">
+        <button class="btn btn-primary">
+            <i class="bi bi-magic"></i>
+            Ejecutar extracción
+        </button>
+    </form>
+</section>
+
+<section class="section">
+    <div class="review-card">
+        {% if payload.fields %}
+            <div class="review-stack">
+            {% for name, item in payload.fields.items() %}
+                <div style="display:grid;grid-template-columns:220px 1fr;gap:12px;align-items:center">
+                    <strong>{{ name.replace('_',' ')|title }}</strong>
+                    <input value="{{ item.detected }}" readonly>
+                </div>
+            {% endfor %}
+            </div>
+        {% else %}
+            <p>No hay extracción todavía. Presione “Ejecutar extracción”.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

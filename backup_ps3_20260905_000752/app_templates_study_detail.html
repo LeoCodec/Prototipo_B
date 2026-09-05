@@ -1,0 +1,150 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Detalle del caso{% endblock %}
+
+{% block content %}
+
+<section class="detail-hero">
+
+    <div>
+        <span class="eyebrow">EXPEDIENTE PILOTO</span>
+        <h1>{{ study.display_name }}</h1>
+        <p>{{ study.folio }}</p>
+    </div>
+
+    <div class="detail-actions">
+        <a href="/capture/{{ study.id }}/mobile"
+           class="btn btn-primary">
+            📷 Capturar otra página
+        </a>
+    </div>
+
+</section>
+
+
+<section class="metric-row">
+
+    <article class="metric">
+        <span>Estatus</span>
+        <strong>{{ study.status }}</strong>
+    </article>
+
+    <article class="metric">
+        <span>Modo</span>
+        <strong>Prototipo B</strong>
+    </article>
+
+    <article class="metric">
+        <span>Flujo</span>
+        <strong>Captura + OCR</strong>
+    </article>
+
+</section>
+
+
+<section class="section">
+
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">DOCUMENTOS</span>
+            <h2>Páginas capturadas</h2>
+        </div>
+    </div>
+
+
+    {% if study.images %}
+
+        <div class="photo-grid">
+
+            {% for image in study.images %}
+
+                <article class="photo-card">
+
+                    <div class="photo-top">
+                        <span>Página {{ image.page_number }}</span>
+
+                        <span class="quality-chip">
+                            {{ image.quality_label or "Pendiente" }}
+                        </span>
+                    </div>
+
+                    <div class="photo-placeholder">
+                        📄
+                    </div>
+
+                    <div class="photo-info">
+
+                        <span>
+                            Archivo
+                        </span>
+
+                        <strong>
+                            {{ image.original_filename or image.stored_filename }}
+                        </strong>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <div class="empty-icon">📷</div>
+            <h3>Aún no hay fotografías</h3>
+            <p>
+                Utilice el modo celular para capturar la primera página.
+            </p>
+
+            <a href="/capture/{{ study.id }}/mobile"
+               class="btn btn-primary">
+                Abrir modo celular
+            </a>
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<section class="section two-column">
+
+    <article class="info-panel">
+
+        <span class="eyebrow">SIGUIENTE PASO</span>
+
+        <h2>Procesamiento OCR</h2>
+
+        <p>
+            Las fotografías guardadas se analizarán para extraer
+            texto preliminar y posteriormente pasarán por revisión humana.
+        </p>
+
+        <a href="/review/{{ study.id }}"
+           class="btn btn-primary">
+            Revisar extracción
+        </a>
+
+    </article>
+
+
+    <article class="info-panel subtle">
+
+        <span class="eyebrow">REGLA DEL PILOTO</span>
+
+        <h2>No sustituir la valoración</h2>
+
+        <p>
+            El Prototipo B valida el mecanismo técnico de captura,
+            procesamiento y exportación. Las decisiones finales
+            siguen siendo responsabilidad del personal autorizado.
+        </p>
+
+    </article>
+
+</section>
+
+{% endblock %}

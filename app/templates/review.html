@@ -1,10 +1,211 @@
 ﻿{% extends "base.html" %}
+
+{% block title %}Revisión OCR{% endblock %}
+{% block page_name %}Revisión de extracción{% endblock %}
+
 {% block content %}
-<h1>Revisión humana</h1><p>{{ study.folio }} · {{ study.student_name }}</p>
-<form method="post">
-<div class="card"><h2>OCR por página</h2>{% for img in study.images %}<div class="ocr-block"><h3>Página {{ img.page_number }} <span class="badge {{ img.quality_status|lower }}">{{ img.quality_status }}</span></h3>{% if img.ocr_error %}<div class="warning">{{ img.ocr_error }}</div>{% endif %}<label>Texto detectado</label><pre>{{ img.ocr_text or '(sin texto detectado)' }}</pre><label>Texto confirmado</label><textarea name="confirmed_{{ img.id }}" rows="7">{{ img.confirmed_text or img.ocr_text }}</textarea></div>{% endfor %}</div>
-<div class="card"><h2>Resumen económico descriptivo</h2><div class="grid"><div><label>Ingreso total</label><input type="number" step="0.01" name="total_income" value="{{ study.total_income }}"></div><div><label>Gasto total</label><input type="number" step="0.01" name="total_expenses" value="{{ study.total_expenses }}"></div><div><label>Integrantes</label><input type="number" min="1" name="household_size" value="{{ study.household_size }}"></div><div><label>Valoración final autorizada (manual)</label><input type="number" step="0.01" name="final_fee" value="{{ study.final_fee or '' }}" placeholder="Sólo si Trabajo Social la confirma"></div></div>
-<div class="metrics"><span>Disponible <b>${{ '%.2f'|format(summary.available) }}</b></span><span>Ingreso per cápita <b>${{ '%.2f'|format(summary.income_per_capita) }}</b></span><span>Disponible per cápita <b>${{ '%.2f'|format(summary.available_per_capita) }}</b></span><span>Carga de gasto <b>{% if summary.expense_load is not none %}{{ '%.2f'|format(summary.expense_load) }}%{% else %}N/D{% endif %}</b></span></div><p class="note">Estos indicadores describen el caso. No determinan automáticamente la cuota.</p></div>
-<div class="actions"><button class="btn primary">Guardar revisión</button><a class="btn" href="{{ url_for('export.excel', study_id=study.id) }}">Exportar Excel</a></div>
+
+<section class="page-title-card">
+
+    <div>
+        <span class="eyebrow">REVISIÓN HUMANA</span>
+        <h1>Resultados de extracción</h1>
+        <p>{{ study.folio }} · {{ study.student_name }}</p>
+    </div>
+
+    <div class="page-title-icon">
+        <i class="bi bi-pencil-square"></i>
+    </div>
+
+</section>
+
+
+<div class="notice-card">
+    <i class="bi bi-exclamation-triangle notice-icon"></i>
+
+    <div>
+        <strong>La información detectada es preliminar.</strong>
+
+        <p>
+            El OCR sirve como apoyo. Revise los resultados
+            antes de utilizarlos como datos confirmados.
+        </p>
+    </div>
+</div>
+
+
+<form
+    method="POST"
+    action="{{ url_for('review.review_study', study_id=study.id) }}">
+
+    <section class="section">
+
+        {% if study.images %}
+
+            <div class="review-stack">
+
+                {% for image in study.images %}
+
+                    <article class="review-card">
+
+                        <div class="review-header">
+                            <div>
+                                <span class="eyebrow">
+                                    PÁGINA {{ image.page_number }}
+                                </span>
+
+                                <h2>Texto detectado</h2>
+                            </div>
+
+                            <span class="quality-chip">
+                                {{ image.quality_status or "Pendiente" }}
+                            </span>
+                        </div>
+
+
+                        <div class="review-grid">
+
+                            <div class="ocr-source">
+                                <i class="bi bi-file-earmark-text ocr-document-icon"></i>
+                                <span>{{ image.filename }}</span>
+
+                                <small style="margin-top:10px">
+                                    Desenfoque: {{ image.blur_score }}
+                                    <br>
+                                    Brillo: {{ image.brightness_score }}
+                                </small>
+                            </div>
+
+                            <div>
+                                <label for="confirmed_{{ image.id }}">
+                                    Texto confirmado
+                                </label>
+
+                                <textarea
+                                    id="confirmed_{{ image.id }}"
+                                    name="confirmed_{{ image.id }}"
+                                    class="ocr-textarea"
+                                    rows="12">{{ image.confirmed_text or image.ocr_text }}</textarea>
+
+                                {% if image.ocr_error %}
+                                    <div class="notice-card" style="margin-top:8px">
+                                        <i class="bi bi-exclamation-circle"></i>
+                                        <div>
+                                            <strong>Error OCR</strong>
+                                            <p>{{ image.ocr_error }}</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+
+                <h3>No hay páginas para revisar</h3>
+
+                <p>
+                    Primero capture fotografías desde el modo celular.
+                </p>
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <section class="section work-grid">
+
+        <article class="module-card">
+            <span class="eyebrow">RESUMEN ECONÓMICO</span>
+            <h2>Datos descriptivos</h2>
+
+            <label for="total_income">Ingreso total</label>
+            <input
+                id="total_income"
+                name="total_income"
+                type="number"
+                step="0.01"
+                min="0"
+                value="{{ study.total_income or 0 }}">
+
+            <label for="total_expenses">Gasto total</label>
+            <input
+                id="total_expenses"
+                name="total_expenses"
+                type="number"
+                step="0.01"
+                min="0"
+                value="{{ study.total_expenses or 0 }}">
+
+            <label for="household_size">Integrantes del hogar</label>
+            <input
+                id="household_size"
+                name="household_size"
+                type="number"
+                min="1"
+                value="{{ study.household_size or 1 }}">
+        </article>
+
+
+        <article class="module-card module-card-soft">
+            <span class="eyebrow">VALORACIÓN HUMANA</span>
+            <h2>Cuota final autorizada</h2>
+
+            <p>
+                El valor de esta casilla no es una decisión automática del OCR.
+                Se registra manualmente por el personal autorizado.
+            </p>
+
+            <label for="final_fee">Cuota final</label>
+            <input
+                id="final_fee"
+                name="final_fee"
+                type="number"
+                step="0.01"
+                min="0"
+                value="{{ study.final_fee if study.final_fee is not none else '' }}">
+        </article>
+
+    </section>
+
+
+    <div class="bottom-actions">
+
+        <a
+            href="{{ url_for('main.study_detail', study_id=study.id) }}"
+            class="btn">
+            <i class="bi bi-arrow-left"></i>
+            Volver al caso
+        </a>
+
+        <button
+            type="submit"
+            class="btn btn-primary">
+            <i class="bi bi-check2-circle"></i>
+            Guardar revisión
+        </button>
+
+        <a
+            href="{{ url_for('export.excel', study_id=study.id) }}"
+            class="btn btn-primary">
+            <i class="bi bi-file-earmark-spreadsheet"></i>
+            Descargar Excel
+        </a>
+
+    </div>
+
 </form>
+
 {% endblock %}

@@ -1,0 +1,191 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Detalle del caso{% endblock %}
+{% block page_name %}Expediente piloto{% endblock %}
+
+{% block content %}
+
+<section class="page-title-card">
+
+    <div>
+        <span class="eyebrow">EXPEDIENTE DE PRUEBA</span>
+        <h1>{{ study.student_name }}</h1>
+        <p>{{ study.folio }}</p>
+    </div>
+
+    <a
+        href="{{ url_for('capture.mobile_capture', study_id=study.id) }}"
+        class="btn btn-primary">
+        <i class="bi bi-camera"></i>
+        Capturar otra página
+    </a>
+
+</section>
+
+
+<section class="dashboard-cards">
+
+    <article class="stat-card">
+        <div class="stat-icon"><i class="bi bi-activity"></i></div>
+        <div>
+            <span>Estatus</span>
+            <strong>{{ study.status }}</strong>
+        </div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-icon"><i class="bi bi-diagram-3"></i></div>
+        <div>
+            <span>Sistema</span>
+            <strong>Prototipo B</strong>
+        </div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-icon"><i class="bi bi-search"></i></div>
+        <div>
+            <span>Proceso</span>
+            <strong>OCR asistido</strong>
+        </div>
+    </article>
+
+</section>
+
+
+<section class="section">
+
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">DOCUMENTOS</span>
+            <h2>Páginas capturadas</h2>
+        </div>
+    </div>
+
+
+    {% if study.images %}
+
+        <div class="photo-grid">
+
+            {% for image in study.images %}
+
+                <article class="photo-card">
+
+                    <div class="photo-top">
+                        <span>
+                            <i class="bi bi-file-earmark"></i>
+                            Página {{ image.page_number }}
+                        </span>
+
+                        <span class="quality-chip">
+                            {{ image.quality_status or "Pendiente" }}
+                        </span>
+                    </div>
+
+                    <div class="photo-placeholder">
+                        <i class="bi bi-file-earmark-image"></i>
+                    </div>
+
+                    <div class="photo-info">
+                        <span>Archivo</span>
+                        <strong>{{ image.filename }}</strong>
+                    </div>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('capture.delete_image', study_id=study.id, image_id=image.id) }}"
+                        style="padding:0 11px 11px">
+
+                        <button
+                            type="submit"
+                            class="btn">
+                            <i class="bi bi-trash"></i>
+                            Eliminar / repetir
+                        </button>
+                    </form>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-camera"></i>
+            </div>
+
+            <h3>Aún no hay fotografías</h3>
+
+            <p>
+                Abra el modo celular para capturar
+                la primera página del expediente.
+            </p>
+
+            <a
+                href="{{ url_for('capture.mobile_capture', study_id=study.id) }}"
+                class="btn btn-primary">
+                <i class="bi bi-phone"></i>
+                Abrir modo celular
+            </a>
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<section class="section work-grid">
+
+    <article class="module-card">
+
+        <div class="module-head">
+            <div class="module-icon">
+                <i class="bi bi-search"></i>
+            </div>
+
+            <div>
+                <span class="eyebrow">SIGUIENTE PASO</span>
+                <h2>Revisión OCR</h2>
+            </div>
+        </div>
+
+        <p>
+            Consulta el texto detectado en cada página
+            y revisa los resultados antes de exportar.
+        </p>
+
+        <a
+            href="{{ url_for('review.review_study', study_id=study.id) }}"
+            class="btn btn-primary">
+            <i class="bi bi-pencil-square"></i>
+            Revisar extracción
+        </a>
+
+    </article>
+
+
+    <article class="module-card module-card-soft">
+
+        <div class="module-head">
+            <div class="module-icon module-icon-soft">
+                <i class="bi bi-person-check"></i>
+            </div>
+
+            <div>
+                <span class="eyebrow">CONTROL HUMANO</span>
+                <h2>Validación institucional</h2>
+            </div>
+        </div>
+
+        <p>
+            El piloto automatiza tareas de captura y análisis,
+            pero no sustituye la entrevista ni la valoración de Trabajo Social.
+        </p>
+
+    </article>
+
+</section>
+
+{% endblock %}

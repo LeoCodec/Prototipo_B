@@ -27,4 +27,13 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+    from app.routes.fields import fields_bp
+    app.register_blueprint(fields_bp)
+
+    from app.routes.analysis import analysis_bp
+    app.register_blueprint(analysis_bp)
+
+    from app.routes.export_v2 import export_v2_bp
+    app.register_blueprint(export_v2_bp)
+
     return app

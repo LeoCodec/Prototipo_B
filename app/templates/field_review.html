@@ -1,0 +1,61 @@
+﻿{% extends "base.html" %}
+{% block title %}Revisión de campos{% endblock %}
+{% block page_name %}Revisión editable{% endblock %}
+
+{% block content %}
+
+<section class="page-title-card">
+    <div>
+        <span class="eyebrow">PS8 · CONFIRMACIÓN HUMANA</span>
+        <h1>Revisión de campos</h1>
+        <p>{{ study.folio }} · {{ study.student_name }}</p>
+    </div>
+</section>
+
+<div class="notice-card">
+    <i class="bi bi-person-check notice-icon"></i>
+    <div>
+        <strong>OCR detectado ≠ dato confirmado.</strong>
+        <p>Corrija cualquier valor antes de continuar.</p>
+    </div>
+</div>
+
+<form method="POST">
+<section class="section review-stack">
+{% for name, item in payload.fields.items() %}
+    <article class="review-card">
+        <div class="review-grid">
+            <div>
+                <span class="eyebrow">DETECTADO</span>
+                <h3>{{ name.replace('_',' ')|title }}</h3>
+                <div class="ocr-source" style="min-height:110px">
+                    {{ item.detected or 'Sin dato detectado' }}
+                </div>
+            </div>
+
+            <div>
+                <label for="field_{{ name }}">Valor confirmado</label>
+                <input
+                    id="field_{{ name }}"
+                    name="field_{{ name }}"
+                    value="{{ item.confirmed or item.detected }}">
+            </div>
+        </div>
+    </article>
+{% else %}
+    <div class="empty-state">
+        <h3>No hay campos extraídos</h3>
+        <p>Ejecute primero la extracción de PS7.</p>
+    </div>
+{% endfor %}
+</section>
+
+<div class="bottom-actions">
+    <button type="submit" class="btn btn-primary">
+        <i class="bi bi-check2-circle"></i>
+        Guardar datos confirmados
+    </button>
+</div>
+</form>
+
+{% endblock %}

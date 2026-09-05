@@ -1,5 +1,291 @@
 ﻿{% extends "base.html" %}
+
+{% block title %}Detalle del caso{% endblock %}
+{% block page_name %}Revisión del expediente{% endblock %}
+
 {% block content %}
-<h1>{{ study.folio }}</h1><p>{{ study.student_name }}</p>
-<div class="actions"><a class="btn" href="{{ url_for('capture.mobile_capture', study_id=study.id) }}">Capturar páginas</a><a class="btn" href="{{ url_for('review.review_study', study_id=study.id) }}">Revisar</a></div>
+
+{% set total = study.images|length %}
+{% set green = study.images|selectattr("quality_status", "equalto", "VERDE")|list|length %}
+{% set yellow = study.images|selectattr("quality_status", "equalto", "AMARILLO")|list|length %}
+{% set red = study.images|selectattr("quality_status", "equalto", "ROJO")|list|length %}
+
+<section class="page-title-card">
+
+    <div>
+        <span class="eyebrow">EXPEDIENTE PILOTO</span>
+        <h1>{{ study.student_name }}</h1>
+        <p>{{ study.folio }}</p>
+    </div>
+
+    <div class="detail-main-actions">
+
+        <a
+            href="{{ url_for('capture.mobile_capture', study_id=study.id) }}"
+            class="btn">
+            <i class="bi bi-phone"></i>
+            Abrir captura
+        </a>
+
+        {% if total > 0 %}
+        <a
+            href="{{ url_for('review.review_study', study_id=study.id) }}"
+            class="btn btn-primary">
+            <i class="bi bi-pencil-square"></i>
+            Revisión OCR
+        </a>
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<section class="quality-dashboard">
+
+    <article class="quality-stat">
+        <span>Total</span>
+        <strong>{{ total }}</strong>
+        <small>fotografías</small>
+    </article>
+
+    <article class="quality-stat green">
+        <span>Correctas</span>
+        <strong>{{ green }}</strong>
+        <small>listas para OCR</small>
+    </article>
+
+    <article class="quality-stat yellow">
+        <span>Revisar</span>
+        <strong>{{ yellow }}</strong>
+        <small>calidad intermedia</small>
+    </article>
+
+    <article class="quality-stat red">
+        <span>Repetir</span>
+        <strong>{{ red }}</strong>
+        <small>calidad insuficiente</small>
+    </article>
+
+</section>
+
+
+<section class="desktop-review-guide">
+
+    <div class="desktop-review-guide-copy">
+        <span class="eyebrow">REVISIÓN EN COMPUTADORA</span>
+        <h2>Seleccione qué fotografías conservar</h2>
+
+        <p>
+            Las fotografías verdes pueden continuar. Las amarillas deben revisarse
+            visualmente y las rojas conviene repetirlas desde el celular.
+        </p>
+    </div>
+
+    <div class="desktop-review-legend">
+        <span><i class="legend-dot green"></i> Correcta</span>
+        <span><i class="legend-dot yellow"></i> Revisar</span>
+        <span><i class="legend-dot red"></i> Repetir</span>
+    </div>
+
+</section>
+
+
+<section class="section">
+
+    {% if study.images %}
+
+        <div class="desktop-photo-review-grid">
+
+            {% for image in study.images %}
+
+                <article class="desktop-photo-review-card status-{{ image.quality_status|lower }}">
+
+                    <div class="desktop-photo-image-wrap">
+
+                        <img
+                            src="{{ url_for('capture.uploaded_file', filename=image.filename) }}"
+                            alt="Página {{ image.page_number }}"
+                            class="desktop-photo-image">
+
+                        <span class="desktop-page-number">
+                            Página {{ image.page_number }}
+                        </span>
+
+                        {% if image.quality_status == "VERDE" %}
+                            <span class="desktop-status result-good">
+                                <i class="bi bi-check-circle-fill"></i>
+                                Correcta
+                            </span>
+
+                        {% elif image.quality_status == "AMARILLO" %}
+                            <span class="desktop-status result-warning">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                Revisar
+                            </span>
+
+                        {% else %}
+                            <span class="desktop-status result-bad">
+                                <i class="bi bi-x-circle-fill"></i>
+                                Repetir
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="desktop-photo-body">
+
+                        <div class="desktop-quality-row">
+
+                            <div>
+                                <span>Enfoque</span>
+                                <strong>{{ "%.0f"|format(image.blur_score or 0) }}</strong>
+                            </div>
+
+                            <div>
+                                <span>Iluminación</span>
+                                <strong>{{ "%.0f"|format(image.brightness_score or 0) }}</strong>
+                            </div>
+
+                        </div>
+
+
+                        {% if image.blur_score < 55 %}
+
+                            <div class="photo-decision-box bad">
+                                <i class="bi bi-eye-slash"></i>
+                                <span>
+                                    <strong>Repetir · desenfoque</strong>
+                                    Mantener el celular estable y enfocar otra vez.
+                                </span>
+                            </div>
+
+                        {% elif image.brightness_score < 55 %}
+
+                            <div class="photo-decision-box bad">
+                                <i class="bi bi-moon"></i>
+                                <span>
+                                    <strong>Repetir · poca luz</strong>
+                                    Aumentar iluminación sin generar sombras.
+                                </span>
+                            </div>
+
+                        {% elif image.brightness_score > 220 %}
+
+                            <div class="photo-decision-box warning">
+                                <i class="bi bi-sun"></i>
+                                <span>
+                                    <strong>Revisar · exceso de luz</strong>
+                                    Evitar reflejos o iluminación directa.
+                                </span>
+                            </div>
+
+                        {% elif image.blur_score < 100 %}
+
+                            <div class="photo-decision-box warning">
+                                <i class="bi bi-zoom-in"></i>
+                                <span>
+                                    <strong>Revisar · enfoque medio</strong>
+                                    Ampliar y confirmar que el texto pequeño sea legible.
+                                </span>
+                            </div>
+
+                        {% else %}
+
+                            <div class="photo-decision-box good">
+                                <i class="bi bi-check2-circle"></i>
+                                <span>
+                                    <strong>Conservar</strong>
+                                    Esta página tiene calidad suficiente.
+                                </span>
+                            </div>
+
+                        {% endif %}
+
+
+                        <div class="desktop-photo-actions">
+
+                            <a
+                                href="{{ url_for('capture.uploaded_file', filename=image.filename) }}"
+                                target="_blank"
+                                class="btn">
+                                <i class="bi bi-arrows-fullscreen"></i>
+                                Ampliar
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('capture.delete_image', study_id=study.id, image_id=image.id) }}">
+
+                                <button type="submit" class="btn btn-danger-soft">
+                                    <i class="bi bi-trash"></i>
+                                    Eliminar / repetir
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="bi bi-camera"></i>
+            </div>
+
+            <h3>Aún no hay fotografías</h3>
+
+            <p>
+                Abra el modo celular para comenzar el expediente.
+            </p>
+
+            <a
+                href="{{ url_for('capture.mobile_capture', study_id=study.id) }}"
+                class="btn btn-primary">
+                <i class="bi bi-phone"></i>
+                Comenzar captura
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+{% if total > 0 %}
+
+<section class="review-next-step">
+
+    <div>
+        <span class="eyebrow">SIGUIENTE ETAPA</span>
+        <h2>Procesamiento y revisión del contenido</h2>
+
+        <p>
+            Cuando las fotografías necesarias estén aceptadas,
+            continúe con la extracción OCR y la corrección de campos.
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('review.review_study', study_id=study.id) }}"
+        class="btn btn-primary btn-large">
+        <i class="bi bi-search"></i>
+        Continuar a OCR
+    </a>
+
+</section>
+
+{% endif %}
+
 {% endblock %}

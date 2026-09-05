@@ -128,16 +128,14 @@
 
         <form
             method="POST"
-            action="{{ url_for('main.new_study') }}"
+            action="/study/new"
             class="create-form">
 
-            <label for="student_name">
-                Nombre o identificador ficticio
-            </label>
+            <label for="display_name">Nombre o identificador ficticio</label>
 
             <input
-                id="student_name"
-                name="student_name"
+                id="display_name"
+                name="display_name"
                 placeholder="Ej. Caso Demo 01"
                 autocomplete="off"
                 required>
@@ -208,7 +206,7 @@
                     <div class="study-card-top">
                         <div>
                             <span class="folio">{{ study.folio }}</span>
-                            <h3>{{ study.student_name }}</h3>
+                            <h3>{{ study.display_name }}</h3>
                         </div>
 
                         <span class="study-status">
@@ -230,16 +228,12 @@
                     </div>
 
                     <div class="study-actions">
-                        <a
-                            href="{{ url_for('main.study_detail', study_id=study.id) }}"
-                            class="btn">
+                        <a href="/study/{{ study.id }}" class="btn">
                             <i class="bi bi-folder2-open"></i>
                             Ver detalle
                         </a>
 
-                        <a
-                            href="{{ url_for('capture.mobile_capture', study_id=study.id) }}"
-                            class="btn btn-primary">
+                        <a href="/capture/{{ study.id }}/mobile" class="btn btn-primary">
                             <i class="bi bi-camera"></i>
                             Capturar
                         </a>

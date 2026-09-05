@@ -1,0 +1,124 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Revisión OCR{% endblock %}
+
+{% block content %}
+
+<section class="detail-hero">
+
+    <div>
+        <span class="eyebrow">REVISIÓN HUMANA</span>
+        <h1>Resultados de extracción</h1>
+        <p>{{ study.folio }} · {{ study.display_name }}</p>
+    </div>
+
+</section>
+
+
+<div class="notice-card">
+    <span>⚠</span>
+
+    <div>
+        <strong>La información detectada es preliminar.</strong>
+
+        <p>
+            Revise y corrija los resultados antes de considerarlos
+            datos confirmados del estudio.
+        </p>
+    </div>
+</div>
+
+
+<section class="section">
+
+    {% if study.images %}
+
+        <div class="review-stack">
+
+            {% for image in study.images %}
+
+                <article class="review-card">
+
+                    <div class="review-header">
+
+                        <div>
+                            <span class="eyebrow">
+                                PÁGINA {{ image.page_number }}
+                            </span>
+
+                            <h2>
+                                Texto detectado
+                            </h2>
+                        </div>
+
+                        <span class="quality-chip">
+                            {{ image.quality_label or "Pendiente" }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="review-grid">
+
+                        <div class="ocr-source">
+
+                            <div class="ocr-document-icon">
+                                📄
+                            </div>
+
+                            <span>
+                                {{ image.original_filename or image.stored_filename }}
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <label>
+                                OCR preliminar
+                            </label>
+
+                            <textarea
+                                class="ocr-textarea"
+                                rows="12"
+                                readonly>{{ image.ocr_text or "Todavía no existe texto OCR para esta página." }}</textarea>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <div class="empty-icon">🔎</div>
+            <h3>No hay páginas para revisar</h3>
+            <p>Primero capture fotografías desde el modo celular.</p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<div class="bottom-actions">
+
+    <a href="/study/{{ study.id }}"
+       class="btn">
+        ← Volver al caso
+    </a>
+
+    <a href="/export/{{ study.id }}"
+       class="btn btn-primary">
+        Continuar a Excel
+    </a>
+
+</div>
+
+{% endblock %}

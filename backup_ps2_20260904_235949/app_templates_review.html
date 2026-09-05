@@ -1,0 +1,10 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<h1>Revisión humana</h1><p>{{ study.folio }} · {{ study.student_name }}</p>
+<form method="post">
+<div class="card"><h2>OCR por página</h2>{% for img in study.images %}<div class="ocr-block"><h3>Página {{ img.page_number }} <span class="badge {{ img.quality_status|lower }}">{{ img.quality_status }}</span></h3>{% if img.ocr_error %}<div class="warning">{{ img.ocr_error }}</div>{% endif %}<label>Texto detectado</label><pre>{{ img.ocr_text or '(sin texto detectado)' }}</pre><label>Texto confirmado</label><textarea name="confirmed_{{ img.id }}" rows="7">{{ img.confirmed_text or img.ocr_text }}</textarea></div>{% endfor %}</div>
+<div class="card"><h2>Resumen económico descriptivo</h2><div class="grid"><div><label>Ingreso total</label><input type="number" step="0.01" name="total_income" value="{{ study.total_income }}"></div><div><label>Gasto total</label><input type="number" step="0.01" name="total_expenses" value="{{ study.total_expenses }}"></div><div><label>Integrantes</label><input type="number" min="1" name="household_size" value="{{ study.household_size }}"></div><div><label>Valoración final autorizada (manual)</label><input type="number" step="0.01" name="final_fee" value="{{ study.final_fee or '' }}" placeholder="Sólo si Trabajo Social la confirma"></div></div>
+<div class="metrics"><span>Disponible <b>${{ '%.2f'|format(summary.available) }}</b></span><span>Ingreso per cápita <b>${{ '%.2f'|format(summary.income_per_capita) }}</b></span><span>Disponible per cápita <b>${{ '%.2f'|format(summary.available_per_capita) }}</b></span><span>Carga de gasto <b>{% if summary.expense_load is not none %}{{ '%.2f'|format(summary.expense_load) }}%{% else %}N/D{% endif %}</b></span></div><p class="note">Estos indicadores describen el caso. No determinan automáticamente la cuota.</p></div>
+<div class="actions"><button class="btn primary">Guardar revisión</button><a class="btn" href="{{ url_for('export.excel', study_id=study.id) }}">Exportar Excel</a></div>
+</form>
+{% endblock %}

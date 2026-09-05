@@ -1,0 +1,187 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Captura móvil{% endblock %}
+{% block page_name %}Captura de documentos{% endblock %}
+
+{% block content %}
+
+<div class="mobile-shell">
+
+    <section class="page-title-card">
+        <div>
+            <span class="eyebrow">MODO CELULAR</span>
+            <h1>Capturar documento</h1>
+            <p>{{ study.folio }} · {{ study.student_name }}</p>
+        </div>
+
+        <div class="page-title-icon">
+            <i class="bi bi-camera"></i>
+        </div>
+    </section>
+
+
+    <section class="mobile-card">
+
+        <div class="quality-banner quality-ready" id="quality-banner">
+            <span class="quality-light"></span>
+
+            <div>
+                <strong>Listo para capturar</strong>
+                <small>Coloque una sola hoja dentro del marco.</small>
+            </div>
+        </div>
+
+
+        <div class="camera-frame">
+            <div class="camera-corner c1"></div>
+            <div class="camera-corner c2"></div>
+            <div class="camera-corner c3"></div>
+            <div class="camera-corner c4"></div>
+
+            <div class="paper-guide">
+                <img
+                    src="{{ url_for('static', filename='img/ippliap-mark.png') }}"
+                    class="paper-watermark"
+                    alt="IPPLIAP">
+
+                <i class="bi bi-file-earmark-text paper-icon"></i>
+
+                <strong>Página del estudio</strong>
+
+                <small>
+                    Mantenga visibles los cuatro bordes
+                    y evite sombras sobre el documento.
+                </small>
+            </div>
+
+            <div class="camera-caption">
+                <i class="bi bi-bounding-box-circles"></i>
+                Centre la hoja dentro del marco
+            </div>
+        </div>
+
+
+        <div class="camera-tips">
+            <div>
+                <i class="bi bi-brightness-high"></i>
+                <strong>Iluminación</strong>
+                <small>Evite sombras fuertes.</small>
+            </div>
+
+            <div>
+                <i class="bi bi-bounding-box-circles"></i>
+                <strong>Encuadre</strong>
+                <small>Hoja completa.</small>
+            </div>
+
+            <div>
+                <i class="bi bi-eye"></i>
+                <strong>Enfoque</strong>
+                <small>Texto visible.</small>
+            </div>
+        </div>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('capture.mobile_capture', study_id=study.id) }}"
+            enctype="multipart/form-data"
+            id="capture-form"
+            class="capture-form">
+
+            <label for="document" class="capture-main-button">
+                <i class="bi bi-camera-fill capture-button-icon"></i>
+
+                <div>
+                    <strong>Tomar fotografía</strong>
+                    <small>Usar cámara trasera del dispositivo</small>
+                </div>
+            </label>
+
+            <input
+                id="document"
+                name="document"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                required>
+
+            <div class="preview-wrap hidden" id="preview-wrap">
+                <div class="preview-header">
+                    <strong>
+                        <i class="bi bi-image"></i>
+                        Vista previa
+                    </strong>
+
+                    <button
+                        type="button"
+                        id="clear-photo"
+                        class="text-button">
+                        <i class="bi bi-arrow-repeat"></i>
+                        Repetir
+                    </button>
+                </div>
+
+                <img
+                    id="photo-preview"
+                    class="photo-preview"
+                    alt="Vista previa">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-large btn-full">
+                <i class="bi bi-cpu"></i>
+                Analizar y guardar página
+            </button>
+        </form>
+
+
+        <div class="processing-box hidden" id="processing-message">
+            <div class="spinner"></div>
+
+            <strong>Analizando fotografía…</strong>
+
+            <small>
+                OpenCV comprobará enfoque e iluminación antes del OCR.
+            </small>
+        </div>
+
+    </section>
+
+
+    <section class="quality-help">
+        <article class="quality-help-card">
+            <span class="traffic green"></span>
+            <div>
+                <strong>Verde · adecuada</strong>
+                <small>La imagen puede procesarse.</small>
+            </div>
+        </article>
+
+        <article class="quality-help-card">
+            <span class="traffic yellow"></span>
+            <div>
+                <strong>Amarillo · revisar</strong>
+                <small>Conviene mejorar la fotografía.</small>
+            </div>
+        </article>
+
+        <article class="quality-help-card">
+            <span class="traffic red"></span>
+            <div>
+                <strong>Rojo · repetir</strong>
+                <small>No conviene procesarla.</small>
+            </div>
+        </article>
+    </section>
+
+
+    <a
+        href="{{ url_for('main.study_detail', study_id=study.id) }}"
+        class="back-link">
+        <i class="bi bi-arrow-left"></i>
+        Volver al expediente
+    </a>
+
+</div>
+
+{% endblock %}

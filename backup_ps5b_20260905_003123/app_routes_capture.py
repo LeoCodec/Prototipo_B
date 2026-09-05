@@ -1,5 +1,5 @@
 ﻿from pathlib import Path
-from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash, send_from_directory
+from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from ..extensions import db
 from ..models import Study, StudyImage
@@ -26,22 +26,7 @@ def mobile_capture(study_id):
         file.save(path)
 
         quality = analyze_quality(path)
-        ocr_result = extract_text(path)
-
-        # Compatibilidad PS6:
-        # extract_text() ahora devuelve un diccionario con:
-        # text, error, confidence y language.
-        # También conservamos compatibilidad con una versión antigua
-        # que devolvía una tupla (text, error).
-        if isinstance(ocr_result, dict):
-            text = ocr_result.get("text", "")
-            ocr_error = ocr_result.get("error")
-            ocr_confidence = ocr_result.get("confidence", 0.0)
-            ocr_language = ocr_result.get("language", "")
-        else:
-            text, ocr_error = ocr_result
-            ocr_confidence = 0.0
-            ocr_language = ""
+        text, ocr_error = extract_text(path)
 
         item = StudyImage(
             study_id=study.id,
@@ -72,10 +57,3 @@ def delete_image(study_id, image_id):
     db.session.commit()
     flash("Página eliminada. Puedes volver a tomarla.", "success")
     return redirect(url_for("capture.mobile_capture", study_id=study.id))
-
-
-@capture_bp.route("/file/<path:filename>")
-def uploaded_file(filename):
-    """Sirve las imágenes capturadas para revisión dentro del piloto."""
-    return send_from_directory(str(current_app.config["UPLOAD_FOLDER"]), filename)
-

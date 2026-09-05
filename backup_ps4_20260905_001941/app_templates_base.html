@@ -1,0 +1,85 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#4f7f00">
+
+    <title>{% block title %}Prototipo B{% endblock %} · IPPLIAP</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <a href="/" class="brand">
+
+        <div class="brand-mark">
+            <span>IP</span>
+        </div>
+
+        <div class="brand-copy">
+            <strong>IPPLIAP</strong>
+            <small>Prototipo B · Digitalización asistida</small>
+        </div>
+
+    </a>
+
+    <nav class="desktop-nav">
+        <a href="/">
+            <i class="bi bi-house-door"></i>
+            Inicio
+        </a>
+
+        <span class="nav-pill">
+            <i class="bi bi-bezier2"></i>
+            Piloto experimental
+        </span>
+    </nav>
+
+</header>
+
+
+<main class="page-shell">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <section class="flash-stack">
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </section>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+</main>
+
+
+<footer class="site-footer">
+
+    <div>
+        <strong>Instituto Pedagógico para Problemas del Lenguaje, I.A.P.</strong>
+        <span>Herramienta de apoyo para captura, revisión y exportación.</span>
+    </div>
+
+    <div class="footer-rule">
+        <i class="bi bi-person-check"></i>
+        La valoración final permanece bajo responsabilidad humana.
+    </div>
+
+</footer>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>
