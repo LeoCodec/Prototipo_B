@@ -1,0 +1,13 @@
+﻿venv/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+instance/*.db
+uploads/*
+!uploads/.gitkeep
+exports/*
+!exports/.gitkeep
+.pytest_cache/
+.vscode/
+.DS_Store
