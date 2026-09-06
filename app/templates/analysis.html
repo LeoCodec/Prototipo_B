@@ -1,80 +1,126 @@
 ﻿{% extends "base.html" %}
-{% block title %}Análisis económico{% endblock %}
-{% block page_name %}Indicadores socioeconómicos{% endblock %}
+{% block title %}Indicadores socioecon&oacute;micos{% endblock %}
+{% block page_name %}Indicadores socioecon&oacute;micos{% endblock %}
 
 {% block content %}
 <section class="page-title-card">
-    <div>
-        <span class="eyebrow">PS9 · CÁLCULOS DESCRIPTIVOS</span>
-        <h1>Resumen económico</h1>
-        <p>{{ study.folio }} · {{ study.student_name }}</p>
-    </div>
+  <div>
+    <span class="eyebrow">PS9 &middot; AN&Aacute;LISIS DESCRIPTIVO</span>
+    <h1>Resumen econ&oacute;mico</h1>
+    <p>{{ study.folio }} &middot; {{ study.student_name }}</p>
+  </div>
 </section>
 
 <div class="notice-card">
-    <i class="bi bi-person-check notice-icon"></i>
-    <div>
-        <strong>Estos indicadores describen el caso.</strong>
-        <p>No asignan automáticamente una cuota.</p>
-    </div>
+  <i class="bi bi-person-check notice-icon"></i>
+  <div>
+    <strong>El sistema calcula indicadores, no una cuota autom&aacute;tica.</strong>
+    <p>La cuota final permanece bajo valoraci&oacute;n del personal autorizado.</p>
+  </div>
 </div>
 
 <form method="POST">
 <section class="section work-grid">
-    <article class="module-card">
-        <span class="eyebrow">ENTRADAS</span>
-        <h2>Datos económicos</h2>
+  <article class="module-card">
+    <span class="eyebrow">DATOS CONFIRMADOS</span>
+    <h2>Entradas econ&oacute;micas</h2>
 
-        <label>Ingreso total mensual</label>
-        <input name="total_income" type="number" min="0" step="0.01" value="{{ study.total_income or 0 }}">
+    <label>Ingreso total mensual</label>
+    <input
+      name="total_income"
+      type="number"
+      min="0"
+      step="0.01"
+      value="{{ metrics.total_income }}"
+    >
 
-        <label style="margin-top:12px">Gasto total mensual</label>
-        <input name="total_expenses" type="number" min="0" step="0.01" value="{{ study.total_expenses or 0 }}">
+    <label style="margin-top:12px">Gasto total mensual</label>
+    <input
+      name="total_expenses"
+      type="number"
+      min="0"
+      step="0.01"
+      value="{{ metrics.total_expenses }}"
+    >
 
-        <label style="margin-top:12px">Integrantes del hogar</label>
-        <input name="household_size" type="number" min="1" value="{{ study.household_size or 1 }}">
-    </article>
+    <label style="margin-top:12px">Integrantes del hogar</label>
+    <input
+      name="household_size"
+      type="number"
+      min="1"
+      value="{{ metrics.household_size }}"
+    >
+  </article>
 
-    <article class="module-card module-card-soft">
-        <span class="eyebrow">DECISIÓN HUMANA</span>
-        <h2>Cuota final autorizada</h2>
-        <label>Cuota final</label>
-        <input name="final_fee" type="number" min="0" step="0.01"
-               value="{{ study.final_fee if study.final_fee is not none else '' }}">
-    </article>
+  <article class="module-card module-card-soft">
+    <span class="eyebrow">VALORACI&Oacute;N HUMANA</span>
+    <h2>Cuota final autorizada</h2>
+    <label>Cuota final</label>
+    <input
+      name="final_fee"
+      type="number"
+      min="0"
+      step="0.01"
+      value="{{ final_fee if final_fee is not none else '' }}"
+    >
+    <small>
+      El sistema no recomienda ni autoriza esta cantidad.
+    </small>
+  </article>
 </section>
 
 <section class="quality-dashboard">
-    <article class="quality-stat">
-        <span>Disponible</span>
-        <strong>${{ "{:,.2f}".format(metrics.available) }}</strong>
-        <small>Ingreso - gasto</small>
-    </article>
+  <article class="quality-stat">
+    <span>Disponible</span>
+    <strong>${{ "{:,.2f}".format(metrics.available) }}</strong>
+    <small>IT - GT</small>
+  </article>
 
-    <article class="quality-stat green">
-        <span>Ingreso per cápita</span>
-        <strong>${{ "{:,.2f}".format(metrics.income_per_capita) }}</strong>
-        <small>Ingreso / integrantes</small>
-    </article>
+  <article class="quality-stat green">
+    <span>Ingreso per c&aacute;pita</span>
+    <strong>${{ "{:,.2f}".format(metrics.income_per_capita) }}</strong>
+    <small>IT / N</small>
+  </article>
 
-    <article class="quality-stat yellow">
-        <span>Disponible per cápita</span>
-        <strong>${{ "{:,.2f}".format(metrics.available_per_capita) }}</strong>
-        <small>Disponible / integrantes</small>
-    </article>
+  <article class="quality-stat yellow">
+    <span>Disponible per c&aacute;pita</span>
+    <strong>${{ "{:,.2f}".format(metrics.available_per_capita) }}</strong>
+    <small>(IT - GT) / N</small>
+  </article>
 
-    <article class="quality-stat red">
-        <span>Carga de gasto</span>
-        <strong>{{ metrics.expense_burden_pct }}%</strong>
-        <small>Gasto / ingreso × 100</small>
-    </article>
+  <article class="quality-stat red">
+    <span>Carga de gasto</span>
+    <strong>{{ metrics.expense_burden_pct }}%</strong>
+    <small>GT / IT x 100</small>
+  </article>
+</section>
+
+<section class="section">
+  <article class="review-card">
+    <span class="eyebrow">LECTURA DESCRIPTIVA</span>
+    <h2>Hallazgos del c&aacute;lculo</h2>
+    <ul>
+      {% for item in findings %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </article>
 </section>
 
 <div class="bottom-actions">
-    <button class="btn btn-primary" type="submit">
-        <i class="bi bi-save"></i>
-        Guardar y recalcular
-    </button>
+  <a class="btn"
+     href="{{ url_for('review_fields.review', study_id=study.id) }}">
+    Volver a revisi&oacute;n
+  </a>
+
+  <button class="btn btn-primary" type="submit">
+    <i class="bi bi-save"></i> Guardar y recalcular
+  </button>
+
+  <a class="btn btn-primary"
+     href="{{ url_for('reports.index') }}">
+    Ir a reportes
+  </a>
 </div>
 </form>
 {% endblock %}

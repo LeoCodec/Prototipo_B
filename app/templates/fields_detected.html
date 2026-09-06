@@ -1,37 +1,67 @@
 ﻿{% extends "base.html" %}
 {% block title %}Campos detectados{% endblock %}
-{% block page_name %}Extracción por campos{% endblock %}
+{% block page_name %}Extracci&oacute;n por campos{% endblock %}
 
 {% block content %}
 <section class="page-title-card">
-    <div>
-        <span class="eyebrow">PS7 · EXTRACCIÓN ESTRUCTURADA</span>
-        <h1>Campos detectados</h1>
-        <p>{{ study.folio }} · {{ study.student_name }}</p>
-    </div>
+  <div>
+    <span class="eyebrow">PS7 &middot; DATOS PRELIMINARES</span>
+    <h1>Campos detectados</h1>
+    <p>{{ study.folio }} &middot; {{ study.student_name }}</p>
+  </div>
+
+  <div class="bottom-actions">
+    <form method="POST" action="{{ url_for('fields.reprocess', study_id=study.id) }}">
+      <button class="btn" type="submit">
+        <i class="bi bi-arrow-repeat"></i> Reprocesar OCR
+      </button>
+    </form>
 
     <form method="POST" action="{{ url_for('fields.run', study_id=study.id) }}">
-        <button class="btn btn-primary">
-            <i class="bi bi-magic"></i>
-            Ejecutar extracción
-        </button>
+      <button class="btn btn-primary" type="submit">
+        <i class="bi bi-magic"></i> Extraer campos
+      </button>
     </form>
+  </div>
 </section>
 
+<div class="notice-card">
+  <i class="bi bi-exclamation-triangle notice-icon"></i>
+  <div>
+    <strong>La extracci&oacute;n es preliminar.</strong>
+    <p>
+      El texto manuscrito y la letra cursiva pueden requerir correcci&oacute;n humana.
+    </p>
+  </div>
+</div>
+
 <section class="section">
-    <div class="review-card">
-        {% if payload.fields %}
-            <div class="review-stack">
-            {% for name, item in payload.fields.items() %}
-                <div style="display:grid;grid-template-columns:220px 1fr;gap:12px;align-items:center">
-                    <strong>{{ name.replace('_',' ')|title }}</strong>
-                    <input value="{{ item.detected }}" readonly>
-                </div>
-            {% endfor %}
-            </div>
-        {% else %}
-            <p>No hay extracción todavía. Presione “Ejecutar extracción”.</p>
-        {% endif %}
-    </div>
+  <div class="review-card">
+    {% if payload.fields %}
+      <div class="review-stack">
+      {% for name, item in payload.fields.items() %}
+        <div style="display:grid;grid-template-columns:220px minmax(260px,1fr) 70px;gap:12px;align-items:center;margin-bottom:10px">
+          <strong>{{ item.label or name.replace('_',' ')|title }}</strong>
+          <input value="{{ item.detected }}" readonly>
+          <small>{{ ((item.confidence or 0) * 100)|round|int }}%</small>
+        </div>
+      {% endfor %}
+      </div>
+
+      <div class="bottom-actions">
+        <a class="btn btn-primary"
+           href="{{ url_for('review_fields.review', study_id=study.id) }}">
+          Continuar a revisi&oacute;n
+        </a>
+      </div>
+    {% else %}
+      <p>
+        A&uacute;n no hay campos extra&iacute;dos.
+        Si el expediente es anterior a la instalaci&oacute;n de Tesseract,
+        pulse primero <strong>Reprocesar OCR</strong> y luego
+        <strong>Extraer campos</strong>.
+      </p>
+    {% endif %}
+  </div>
 </section>
 {% endblock %}

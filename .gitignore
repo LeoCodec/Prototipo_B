@@ -11,3 +11,11 @@ exports/*
 .pytest_cache/
 .vscode/
 .DS_Store
+
+*.pyc
+
+instance/
+
+backup_ps*/
+
+*.log

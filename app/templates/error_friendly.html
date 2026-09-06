@@ -1,0 +1,24 @@
+﻿{% extends "base.html" %}
+{% block title %}Incidencia t&eacute;cnica{% endblock %}
+{% block page_name %}Incidencia t&eacute;cnica{% endblock %}
+
+{% block content %}
+<section class="page-title-card">
+  <div>
+    <span class="eyebrow">PROTOTIPO B</span>
+    <h1>No fue posible completar la operaci&oacute;n</h1>
+    <p>El sistema registr&oacute; el problema para revisi&oacute;n t&eacute;cnica.</p>
+  </div>
+</section>
+
+<div class="notice-card">
+  <i class="bi bi-tools notice-icon"></i>
+  <div>
+    <strong>C&oacute;digo de seguimiento: {{ error_id }}</strong>
+    <p>
+      Puede volver al inicio y continuar con otra tarea.
+      El detalle t&eacute;cnico queda en el registro de diagn&oacute;stico.
+    </p>
+  </div>
+</div>
+{% endblock %}

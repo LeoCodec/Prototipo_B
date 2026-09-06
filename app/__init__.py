@@ -36,4 +36,14 @@ def create_app():
     from app.routes.export_v2 import export_v2_bp
     app.register_blueprint(export_v2_bp)
 
+    from app.routes.review_fields import review_fields_bp, diagnostics_bp
+    app.register_blueprint(review_fields_bp)
+    app.register_blueprint(diagnostics_bp)
+
+    from app.services.error_service import install_error_handler
+    install_error_handler(app)
+
+    from app.routes.reports import reports_bp
+    app.register_blueprint(reports_bp)
+
     return app

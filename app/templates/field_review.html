@@ -1,61 +1,108 @@
 ﻿{% extends "base.html" %}
-{% block title %}Revisión de campos{% endblock %}
-{% block page_name %}Revisión editable{% endblock %}
+{% block title %}Revisi&oacute;n de campos{% endblock %}
+{% block page_name %}Revisi&oacute;n editable{% endblock %}
 
 {% block content %}
-
 <section class="page-title-card">
-    <div>
-        <span class="eyebrow">PS8 · CONFIRMACIÓN HUMANA</span>
-        <h1>Revisión de campos</h1>
-        <p>{{ study.folio }} · {{ study.student_name }}</p>
-    </div>
+  <div>
+    <span class="eyebrow">PS8 &middot; CONFIRMACI&Oacute;N HUMANA</span>
+    <h1>Revisi&oacute;n de campos</h1>
+    <p>{{ study.folio }} &middot; {{ study.student_name }}</p>
+  </div>
 </section>
 
 <div class="notice-card">
-    <i class="bi bi-person-check notice-icon"></i>
-    <div>
-        <strong>OCR detectado ≠ dato confirmado.</strong>
-        <p>Corrija cualquier valor antes de continuar.</p>
-    </div>
+  <i class="bi bi-person-check notice-icon"></i>
+  <div>
+    <strong>OCR detectado no significa dato confirmado.</strong>
+    <p>
+      Revise especialmente cifras, nombres propios y escritura manuscrita.
+    </p>
+  </div>
 </div>
+
+{% if not payload.fields %}
+<section class="section">
+  <div class="review-card">
+    <p>No hay campos para revisar.</p>
+    <a class="btn btn-primary"
+       href="{{ url_for('fields.detected', study_id=study.id) }}">
+      Volver a extracci&oacute;n
+    </a>
+  </div>
+</section>
+{% else %}
 
 <form method="POST">
 <section class="section review-stack">
-{% for name, item in payload.fields.items() %}
-    <article class="review-card">
-        <div class="review-grid">
-            <div>
-                <span class="eyebrow">DETECTADO</span>
-                <h3>{{ name.replace('_',' ')|title }}</h3>
-                <div class="ocr-source" style="min-height:110px">
-                    {{ item.detected or 'Sin dato detectado' }}
-                </div>
-            </div>
-
-            <div>
-                <label for="field_{{ name }}">Valor confirmado</label>
-                <input
-                    id="field_{{ name }}"
-                    name="field_{{ name }}"
-                    value="{{ item.confirmed or item.detected }}">
-            </div>
+  {% for name, item in payload.fields.items() %}
+  <article class="review-card">
+    <div class="review-grid">
+      <div>
+        <span class="eyebrow">DETECTADO</span>
+        <h3>{{ item.label or name.replace('_',' ')|title }}</h3>
+        <div class="ocr-source">
+          {{ item.detected or 'Sin dato detectado' }}
         </div>
-    </article>
-{% else %}
-    <div class="empty-state">
-        <h3>No hay campos extraídos</h3>
-        <p>Ejecute primero la extracción de PS7.</p>
+        <small>
+          Confianza t&eacute;cnica:
+          {{ ((item.confidence or 0) * 100)|round|int }}%
+        </small>
+      </div>
+
+      <div>
+        <label>Valor confirmado</label>
+        <input
+          name="field_{{ name }}"
+          value="{{ item.confirmed if item.confirmed is not none else item.detected }}"
+          autocomplete="off"
+        >
+      </div>
     </div>
-{% endfor %}
+  </article>
+  {% endfor %}
+
+  <article class="review-card">
+    <span class="eyebrow">CONTEXTO HUMANO</span>
+    <h3>Observaciones del caso</h3>
+    <textarea
+      name="context_notes"
+      rows="5"
+      placeholder="Ej. traslado prolongado, empleo irregular, vivienda compartida, informacion aclarada durante la entrevista..."
+    >{{ payload.context_notes or '' }}</textarea>
+    <small>
+      Estas observaciones son registradas por una persona; no son inferencias autom&aacute;ticas.
+    </small>
+  </article>
+
+  <article class="review-card">
+    <span class="eyebrow">CONTROL DEL PILOTO</span>
+    <h3>Notas de revisi&oacute;n</h3>
+    <textarea
+      name="review_notes"
+      rows="3"
+      placeholder="Ej. OCR confundio dos numeros; se corrigio manualmente."
+    >{{ payload.review_notes or '' }}</textarea>
+  </article>
 </section>
 
 <div class="bottom-actions">
-    <button type="submit" class="btn btn-primary">
-        <i class="bi bi-check2-circle"></i>
-        Guardar datos confirmados
-    </button>
+  <a class="btn"
+     href="{{ url_for('fields.detected', study_id=study.id) }}">
+    Volver
+  </a>
+
+  <button class="btn btn-primary" type="submit">
+    <i class="bi bi-save"></i> Guardar revisi&oacute;n
+  </button>
+
+  {% if payload.human_reviewed %}
+  <a class="btn btn-primary"
+     href="{{ url_for('analysis.study', study_id=study.id) }}">
+    Continuar a indicadores
+  </a>
+  {% endif %}
 </div>
 </form>
-
+{% endif %}
 {% endblock %}

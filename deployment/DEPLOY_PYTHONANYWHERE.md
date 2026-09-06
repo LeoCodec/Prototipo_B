@@ -1,13 +1,15 @@
 ﻿# Despliegue del Prototipo B en PythonAnywhere
 
-## 1. Clonar el repositorio
+## Clonar
 
 ```bash
 git clone https://github.com/LeoCodec/Prototipo_B.git
 cd Prototipo_B
 ```
 
-## 2. Crear virtualenv
+## Virtualenv
+
+Use la misma versión de Python que seleccione para la Web App.
 
 ```bash
 mkvirtualenv --python=/usr/bin/python3.13 prototipo-b
@@ -15,7 +17,7 @@ workon prototipo-b
 pip install -r requirements.txt
 ```
 
-## 3. Comprobar OCR
+## OCR
 
 ```bash
 which tesseract
@@ -23,58 +25,50 @@ tesseract --version
 tesseract --list-langs
 ```
 
-No configure `TESSERACT_CMD` hasta conocer la ruta real.
+No copie la ruta de Windows. Use la ruta Linux real que devuelva `which tesseract`.
 
-## 4. Crear Web App
+## Web App
 
-En la pestaña Web:
+1. Web
+2. Add a new web app
+3. Manual configuration
+4. Misma versión de Python que el virtualenv
+5. Configurar el virtualenv `prototipo-b`
+6. Editar el archivo WSGI con `pythonanywhere_wsgi.py.template`
 
-1. Add a new web app
-2. Manual configuration
-3. Elegir la misma versión de Python
-4. Seleccionar el virtualenv `prototipo-b`
+## Static files
 
-## 5. Configurar WSGI
-
-Copie y adapte:
-
-`deployment/pythonanywhere_wsgi.py.template`
-
-Cambie:
-
-```python
-PROJECT = "/home/YOURUSERNAME/Prototipo_B"
-```
-
-## 6. Static files
-
-Si es necesario:
+Si fuera necesario:
 
 ```text
 URL: /static/
 Directory: /home/YOURUSERNAME/Prototipo_B/app/static
 ```
 
-## 7. Actualizar
+## Importante
 
-```bash
-cd ~/Prototipo_B
-git pull
-workon prototipo-b
-pip install -r requirements.txt
+No llame `app.run()` desde el archivo WSGI.
+
+`run.py` puede contenerlo únicamente dentro de:
+
+```python
+if __name__ == "__main__":
+    app.run(...)
 ```
 
-Después pulse Reload en la pestaña Web.
+## Prueba de aceptación
 
-## 8. Prueba del piloto
+1. Inicio
+2. Crear caso ficticio
+3. Capturar una página
+4. OpenCV
+5. OCR
+6. Extracción
+7. Revisión humana
+8. Cálculos
+9. Excel individual
+10. Excel múltiple
+11. Word
+12. Eliminar un caso ficticio
 
-Use casos ficticios:
-
-1. Crear caso
-2. Capturar foto
-3. Calidad OpenCV
-4. OCR
-5. Campos
-6. Revisión
-7. Cálculos
-8. Excel
+No utilizar expedientes reales durante la demo pública.

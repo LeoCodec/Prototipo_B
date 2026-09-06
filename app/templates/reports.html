@@ -1,0 +1,95 @@
+﻿{% extends "base.html" %}
+{% block title %}Reportes{% endblock %}
+{% block page_name %}Reportes y exportaci&oacute;n{% endblock %}
+
+{% block content %}
+<section class="page-title-card">
+  <div>
+    <span class="eyebrow">PS10 &middot; SALIDAS</span>
+    <h1>Reportes del Prototipo B</h1>
+    <p>
+      Genere Excel o Word por expediente, o consolide varios casos en un mismo Excel.
+    </p>
+  </div>
+</section>
+
+<div class="notice-card">
+  <i class="bi bi-file-earmark-check notice-icon"></i>
+  <div>
+    <strong>Los reportes se generan en memoria.</strong>
+    <p>
+      No se acumulan copias de Excel o Word en el servidor despu&eacute;s de cada descarga.
+    </p>
+  </div>
+</div>
+
+<form method="POST" action="{{ url_for('reports.bulk_excel') }}">
+<section class="section">
+  <div class="review-card">
+    <div class="bottom-actions" style="justify-content:flex-end;margin-bottom:15px">
+      <button class="btn btn-primary" type="submit">
+        <i class="bi bi-file-earmark-excel"></i>
+        Excel de seleccionados
+      </button>
+    </div>
+
+    <div style="overflow:auto">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="width:60px">Elegir</th>
+            <th>Folio</th>
+            <th>Caso</th>
+            <th>Estatus</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+        {% for study in studies %}
+          <tr>
+            <td>
+              <input
+                type="checkbox"
+                name="study_ids"
+                value="{{ study.id }}"
+              >
+            </td>
+            <td>{{ study.folio }}</td>
+            <td>{{ study.student_name }}</td>
+            <td>{{ study.status }}</td>
+            <td>
+              <a
+                class="btn"
+                href="{{ url_for('reports.excel_case', study_id=study.id) }}"
+              >
+                Excel
+              </a>
+
+              <a
+                class="btn"
+                href="{{ url_for('reports.word_case', study_id=study.id) }}"
+              >
+                Word
+              </a>
+
+              <a
+                class="btn"
+                href="{{ url_for('analysis.study', study_id=study.id) }}"
+              >
+                Indicadores
+              </a>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="5">No hay casos registrados.</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</form>
+{% endblock %}
