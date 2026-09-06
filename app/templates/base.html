@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 <head>
     <meta charset="utf-8">
@@ -11,6 +11,19 @@
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/app.css') }}">
+
+    <!-- IPPLIAP FAVICON -->
+    <link rel="icon"
+          type="image/svg+xml"
+          href="{{ url_for('static', filename='img/ippliap-mark.svg') }}">
+
+    <link rel="alternate icon"
+          type="image/png"
+          href="{{ url_for('static', filename='img/ippliap-mark.png') }}">
+
+    <link rel="apple-touch-icon"
+          href="{{ url_for('static', filename='img/ippliap-mark.png') }}">
+
 </head>
 <body>
 
@@ -20,7 +33,7 @@
 
         <a href="/" class="side-brand">
             <img
-                src="{{ url_for('static', filename='img/ippliap-mark.png') }}"
+                src="{{ url_for('static', filename='img/ippliap-mark.svg') }}"
                 alt="IPPLIAP"
                 class="side-logo">
 
@@ -79,9 +92,20 @@
         <header class="topbar">
 
             <div class="mobile-brand">
+                <picture class="brand-mark">
+                <source
+                    srcset="{{ url_for('static', filename='img/ippliap-mark.svg') }}"
+                    type="image/svg+xml"
+                >
+
                 <img
                     src="{{ url_for('static', filename='img/ippliap-mark.png') }}"
-                    alt="IPPLIAP">
+                    alt="IPPLIAP"
+                    class="brand-logo"
+                    width="48"
+                    height="48"
+                >
+            </picture>
 
                 <div>
                     <strong>IPPLIAP</strong>

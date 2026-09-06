@@ -1,4 +1,4 @@
-﻿:root{
+:root{
     --ip-green:#5f9700;
     --ip-green-2:#75ad18;
     --ip-dark:#315500;
@@ -2060,4 +2060,41 @@ input:focus,textarea:focus,select:focus{
         grid-template-columns:1fr 1fr;
     }
 }
+
+
+
+/* === IPPLIAP BRAND SVG === */
+
+.brand-mark {
+    width: 52px;
+    height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 52px;
+}
+
+.brand-mark .brand-logo,
+.brand-mark img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+.mobile-brand .brand-mark {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+}
+
+@media (max-width: 768px) {
+    .brand-mark {
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+    }
+}
+
+/* === FIN IPPLIAP BRAND SVG === */
 
