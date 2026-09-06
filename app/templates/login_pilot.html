@@ -1,0 +1,4 @@
+﻿{% extends "base.html" %}{% block title %}Acceso al piloto{% endblock %}{% block page_name %}Acceso protegido{% endblock %}{% block content %}
+<section class="page-title-card" style="max-width:650px;margin:40px auto"><div><span class="eyebrow">PROTOTIPO B</span><h1>Acceso al sistema</h1><p>Use las credenciales autorizadas para la prueba institucional.</p></div></section>
+<form method="POST" style="max-width:650px;margin:0 auto"><article class="review-card"><label>Usuario</label><input name="username" autocomplete="username" required><label style="margin-top:12px">ContraseÃ±a</label><input name="password" type="password" autocomplete="current-password" required><div class="bottom-actions" style="margin-top:18px"><button class="btn btn-primary" type="submit">Ingresar</button></div></article></form>
+{% endblock %}

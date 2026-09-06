@@ -288,4 +288,57 @@
 
 {% endif %}
 
+\n<!-- PS12-FLUJO -->
+<section class="section">
+    <article class="review-card">
+        <span class="eyebrow">FLUJO DEL EXPEDIENTE</span>
+        <h2>Continuar procesamiento</h2>
+        <p>
+            Revise los campos, confirme la informaciÃ³n y genere los documentos
+            del expediente cuando la revisiÃ³n estÃ© lista.
+        </p>
+        <div class="bottom-actions">
+            <a class="btn btn-primary"
+               href="{{ url_for('fields.detected', study_id=study.id) }}">
+                <i class="bi bi-ui-checks-grid"></i>
+                ExtracciÃ³n por campos
+            </a>
+            <a class="btn"
+               href="{{ url_for('review_fields.review', study_id=study.id) }}">
+                <i class="bi bi-pencil-square"></i>
+                RevisiÃ³n confirmada
+            </a>
+            <a class="btn"
+               href="{{ url_for('analysis.study', study_id=study.id) }}">
+                <i class="bi bi-calculator"></i>
+                Indicadores
+            </a>
+        </div>
+    </article>
+</section>
+
+<section class="section">
+    <article class="review-card">
+        <span class="eyebrow">DOCUMENTOS DEL EXPEDIENTE</span>
+        <h2>Exportar caso</h2>
+        <p>
+            El Excel conserva los datos del expediente. El Word presenta
+            el resumen, los indicadores, el contexto y el fundamento
+            documental de la cuota final registrada.
+        </p>
+        <div class="bottom-actions">
+            <a class="btn"
+               href="{{ url_for('reports.excel_case', study_id=study.id) }}">
+                <i class="bi bi-file-earmark-excel"></i>
+                Excel del caso
+            </a>
+            <a class="btn btn-primary"
+               href="{{ url_for('reports.word_case', study_id=study.id) }}">
+                <i class="bi bi-file-earmark-word"></i>
+                Word - JustificaciÃ³n de cuota
+            </a>
+        </div>
+    </article>
+</section>
+
 {% endblock %}

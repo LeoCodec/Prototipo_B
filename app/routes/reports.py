@@ -15,6 +15,7 @@ from app.services.report_service import (
     safe_name,
 )
 from app.services.word_report_service import build_case_docx
+from app.services.bulk_report_service import build_bulk_workbook
 
 
 reports_bp = Blueprint("reports", __name__, url_prefix="/reports")
@@ -59,7 +60,7 @@ def word_case(study_id: int):
 
     filename = (
         f"{safe_name(study.student_name)}_"
-        f"{safe_name(study.folio)}_resumen.docx"
+        f"{safe_name(study.folio)}_justificacion_cuota.docx"
     )
 
     output = build_case_docx(
@@ -99,7 +100,7 @@ def bulk_excel():
         .all()
     )
 
-    output = bulk_workbook(
+    output = build_bulk_workbook(
         studies,
         current_app.instance_path,
     )
@@ -120,3 +121,4 @@ def bulk_excel():
             "spreadsheetml.sheet"
         ),
     )
+

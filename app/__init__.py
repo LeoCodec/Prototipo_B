@@ -46,4 +46,11 @@ def create_app():
     from app.routes.reports import reports_bp
     app.register_blueprint(reports_bp)
 
+    from app.routes.case_management import case_management_bp
+    app.register_blueprint(case_management_bp)
+
+    from app.services.security_service import auth_bp, install_security
+    app.register_blueprint(auth_bp)
+    install_security(app)
+
     return app
