@@ -11,13 +11,12 @@
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/app.css') }}">
-
     <!-- IPPLIAP FAVICON -->
     <link rel="icon"
-          type="image/svg+xml"
-          href="{{ url_for('static', filename='img/ippliap-mark.svg') }}">
+          type="image/png"
+          href="{{ url_for('static', filename='img/ippliap-mark.png') }}">
 
-    <link rel="alternate icon"
+    <link rel="shortcut icon"
           type="image/png"
           href="{{ url_for('static', filename='img/ippliap-mark.png') }}">
 
@@ -33,7 +32,7 @@
 
         <a href="/" class="side-brand">
             <img
-                src="{{ url_for('static', filename='img/ippliap-mark.svg') }}"
+                src="{{ url_for('static', filename='img/ippliap-mark.png') }}"
                 alt="IPPLIAP"
                 class="side-logo">
 
@@ -92,20 +91,9 @@
         <header class="topbar">
 
             <div class="mobile-brand">
-                <picture class="brand-mark">
-                <source
-                    srcset="{{ url_for('static', filename='img/ippliap-mark.svg') }}"
-                    type="image/svg+xml"
-                >
-
                 <img
                     src="{{ url_for('static', filename='img/ippliap-mark.png') }}"
-                    alt="IPPLIAP"
-                    class="brand-logo"
-                    width="48"
-                    height="48"
-                >
-            </picture>
+                    alt="IPPLIAP">
 
                 <div>
                     <strong>IPPLIAP</strong>
