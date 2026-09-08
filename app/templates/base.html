@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#355f00">
-    <title>{% block title %}Prototipo B{% endblock %} · IPPLIAP</title>
+    <title>{% block title %}Estudios socioeconómicos{% endblock %} · IPPLIAP</title>
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
@@ -38,38 +38,32 @@
 
             <div>
                 <strong>IPPLIAP</strong>
-                <small>Prototipo B</small>
+                <small>Estudios socioeconómicos</small>
             </div>
         </a>
 
-        <div class="side-section-label">PILOTO EXPERIMENTAL</div>
+        <div class="side-section-label">GESTIÓN INSTITUCIONAL</div>
 
         <nav class="side-nav">
             <a href="/" class="side-link">
                 <i class="bi bi-grid-1x2"></i><span>Inicio</span>
             </a>
 
-            <a href="/#new-case" class="side-link">
-                <i class="bi bi-file-earmark-plus"></i><span>Nuevo caso</span>
+            <a href="{{ url_for('institutional.index') }}#nuevo" class="side-link">
+                <i class="bi bi-file-earmark-plus"></i><span>Nuevo estudio</span>
             </a>
 
-            <a href="/#cases" class="side-link">
+            <a href="{{ url_for('institutional.index') }}" class="side-link">
                 <i class="bi bi-folder2-open"></i><span>Casos</span>
             </a>
 
-            <a href="/#flow" class="side-link">
-                <i class="bi bi-camera"></i><span>Captura</span>
-            </a>
+            
 
-            <a href="/#flow" class="side-link">
-                <i class="bi bi-cpu"></i><span>Procesamiento</span>
-            </a>
+            
 
-            <a href="/#flow" class="side-link">
-                <i class="bi bi-pencil-square"></i><span>Revisión OCR</span>
-            </a>
+            
 
-            <a href="{{ url_for('reports.index') }}" class="side-link">
+            <a href="{{ url_for('institutional.index') }}" class="side-link">
                 <i class="bi bi-bar-chart-line"></i><span>Reportes</span>
             </a>
 
@@ -97,18 +91,18 @@
 
                 <div>
                     <strong>IPPLIAP</strong>
-                    <small>Prototipo B</small>
+                    <small>Estudios socioeconómicos</small>
                 </div>
             </div>
 
             <div class="topbar-copy">
-                <span class="topbar-kicker">DIGITALIZACIÓN ASISTIDA</span>
+                <span class="topbar-kicker">GESTIÓN INSTITUCIONAL</span>
                 <strong>{% block page_name %}Estudio Socioeconómico{% endblock %}</strong>
             </div>
 
             <span class="pilot-chip">
                 <span class="pilot-dot"></span>
-                Piloto activo
+                Sistema activo
             </span>
 
         </header>
@@ -135,7 +129,7 @@
 
         <footer class="site-footer">
             <span>Instituto Pedagógico para Problemas del Lenguaje, I.A.P.</span>
-            <span>Prototipo B · Captura · OpenCV · OCR · Revisión · Reportes</span>
+            <span>Estudios socioeconómicos · Formularios · Cálculos · Word · Excel</span>
         </footer>
 
     </section>

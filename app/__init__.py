@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 from flask import Flask
 from config import Config
 from .extensions import db
@@ -52,5 +52,8 @@ def create_app():
     from app.services.security_service import auth_bp, install_security
     app.register_blueprint(auth_bp)
     install_security(app)
+
+    from app.routes.institutional_forms import institutional_bp
+    app.register_blueprint(institutional_bp)
 
     return app

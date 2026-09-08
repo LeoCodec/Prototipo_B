@@ -1,5 +1,0 @@
-﻿{% extends "base.html" %}
-{% block content %}
-<h1>{{ study.folio }}</h1><p>{{ study.student_name }}</p>
-<div class="actions"><a class="btn" href="{{ url_for('capture.mobile_capture', study_id=study.id) }}">Capturar páginas</a><a class="btn" href="{{ url_for('review.review_study', study_id=study.id) }}">Revisar</a></div>
-{% endblock %}

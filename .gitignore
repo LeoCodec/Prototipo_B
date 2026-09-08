@@ -1,4 +1,4 @@
-﻿venv/
+venv/
 .venv/
 __pycache__/
 *.py[cod]
@@ -19,3 +19,5 @@ instance/
 backup_ps*/
 
 *.log
+exports/
+uploads/

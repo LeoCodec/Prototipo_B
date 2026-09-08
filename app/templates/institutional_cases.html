@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Estudios socioecon&oacute;micos{% endblock %}{% block page_name %}Estudios socioecon&oacute;micos{% endblock %}
+{% block content %}
+<section class="page-title-card"><div><span class="eyebrow">GESTI&Oacute;N INSTITUCIONAL</span><h1>Estudios socioecon&oacute;micos</h1><p>Capture cada expediente manualmente, revise la cuota de referencia y genere Word o Excel.</p></div></section>
+<section class="section" id="nuevo"><article class="review-card"><span class="eyebrow">NUEVO ESTUDIO</span><h2>Crear expediente</h2><form method="POST" action="{{ url_for('institutional.new_case') }}" class="manual-new-form"><label>Nombre o identificador inicial<input name="student_name" placeholder="Ej. Mateo R&iacute;os" required></label><button class="btn btn-primary" type="submit">Crear formulario</button></form></article></section>
+<section class="section"><form method="POST" action="{{ url_for('institutional.bulk_excel') }}"><div class="section-heading"><div><span class="eyebrow">EXPEDIENTES</span><h2>Casos registrados</h2></div><button class="btn btn-primary" type="submit">Excel de seleccionados</button></div><div class="study-grid">
+{% for study in studies %}<article class="study-card"><label class="select-case"><input type="checkbox" name="study_ids" value="{{ study.id }}"> Seleccionar</label><span class="folio">{{ study.folio }}</span><h3>{{ study.student_name }}</h3><p>{{ study.status }}</p><div class="study-actions"><a class="btn btn-primary" href="{{ url_for('institutional.form', study_id=study.id) }}">Abrir formulario</a><a class="btn" href="{{ url_for('institutional.preview', study_id=study.id) }}">Vista previa</a><a class="btn" href="{{ url_for('institutional.word', study_id=study.id) }}">Word</a><a class="btn" href="{{ url_for('institutional.excel', study_id=study.id) }}">Excel</a></div><button class="btn btn-danger"
+        type="submit"
+        formaction="{{ url_for('institutional.delete', study_id=study.id) }}"
+        formmethod="post"
+        onclick="return confirm('¿Eliminar definitivamente este caso?');">Eliminar</button></article>{% else %}<article class="review-card"><h3>No hay casos registrados</h3><p>Cree el primer estudio desde el formulario superior.</p></article>{% endfor %}
+</div></form></section>
+<style>.manual-new-form{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}.manual-new-form label{display:flex;flex-direction:column;gap:7px;font-weight:700}.select-case{display:flex;gap:8px;align-items:center;margin-bottom:12px;font-weight:700}.btn-danger{border-color:#b42318;color:#b42318;background:#fff}.section-heading{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:18px}@media(max-width:760px){.manual-new-form{grid-template-columns:1fr}.section-heading{align-items:stretch;flex-direction:column}}</style>
+{% endblock %}
