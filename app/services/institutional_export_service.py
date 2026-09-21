@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from io import BytesIO
 from statistics import mean, median
@@ -25,7 +25,7 @@ LABELS = {
     "solicitud_tipo": "Tipo de solicitud",
     "turno": "Turno",
     "grado": "Grado que solicita",
-    "fecha": "Fecha",
+    "fecha": "Fecha de entrevista",
     "nombre_alumno": "Nombre",
     "apellido_paterno_alumno": "Apellido paterno",
     "apellido_materno_alumno": "Apellido materno",
@@ -230,6 +230,8 @@ def _expense_rows(c):
 
     for key, label in ANNUAL_EQ_LABELS + MONTHLY_EXPENSE_LABELS:
         value = max(_num(detail.get(key), 0.0), 0.0)
+        if value <= 0:
+            continue
         rows.append(
             (
                 label,
@@ -238,6 +240,21 @@ def _expense_rows(c):
                 (value / total_income * 100.0) if total_income > 0 else 0.0,
             )
         )
+
+    for item in c.get("extra_expenses") or []:
+        value = max(_num(item.get("monto_mensual"), 0.0), 0.0)
+        if value <= 0:
+            continue
+        label = str(item.get("concepto") or "Gasto adicional").strip()
+        rows.append(
+            (
+                label,
+                value,
+                (value / total_expenses * 100.0) if total_expenses > 0 else 0.0,
+                (value / total_income * 100.0) if total_income > 0 else 0.0,
+            )
+        )
+
     return rows
 
 
@@ -278,7 +295,8 @@ def build_case_excel(study, instance_path):
         ("Caso", study.student_name),
         ("Estatus", study.status),
         ("Turno", d.get("turno", "")),
-        ("Fecha", d.get("fecha", "")),
+        ("Fecha de entrevista", d.get("fecha", "")),
+        ("Responsable(s)", ", ".join(c.get("responsible_members") or []) or "Sin seleccionar"),
     ]
     rr = 4
     for label, value in metadata:
@@ -373,6 +391,7 @@ def build_case_excel(study, instance_path):
         ("Caso", study.student_name),
         ("Turno", d.get("turno", "")),
         ("Integrantes usados en el cálculo", c.get("household_size", 1)),
+        ("Responsables seleccionados", ", ".join(c.get("responsible_members") or []) or "Sin seleccionar"),
         ("Ingreso total", c.get("total_income", 0)),
         ("Gasto mensual equivalente", c.get("total_expenses", 0)),
         ("Disponible", c.get("available", 0)),
@@ -387,6 +406,7 @@ def build_case_excel(study, instance_path):
         ("Cuota de referencia", c.get("reference_fee", 0)),
         ("Cuota final autorizada", c.get("final_fee")),
         ("Explicación", c.get("explanation", "")),
+        ("Aspectos para revisión humana", " | ".join(c.get("context_flags") or []) or "Sin alertas automáticas"),
     ]
     money_detail = {
         "Ingreso total",
@@ -504,14 +524,21 @@ def build_case_word(study, instance_path):
     doc.add_heading("3. Integrantes del hogar", 1)
     fam = p.get("family_members") or []
     if fam:
-        t = doc.add_table(rows=1, cols=4)
+        t = doc.add_table(rows=1, cols=5)
         t.style = "Table Grid"
-        for i, x in enumerate(("Nombre", "Parentesco", "Edad", "Ocupación")):
+        for i, x in enumerate(("Nombre", "Parentesco", "Edad", "Ocupación", "Responsable")):
             t.rows[0].cells[i].text = x
         for row in fam:
             cc = t.add_row().cells
-            for i, key in enumerate(("nombre", "parentesco", "edad", "ocupacion")):
-                cc[i].text = str(row.get(key, ""))
+            vals = (
+                row.get("nombre", ""),
+                row.get("parentesco", ""),
+                row.get("edad", ""),
+                row.get("ocupacion", ""),
+                "Sí" if row.get("responsable") else "",
+            )
+            for i, value in enumerate(vals):
+                cc[i].text = str(value)
     else:
         doc.add_paragraph("Sin integrantes registrados.")
 
@@ -544,9 +571,38 @@ def build_case_word(study, instance_path):
     ekeys = ["predial_anual","gastos_anuales","vacaciones_anual","renta","luz","agua","telefono_gasto","gas","alimentos","automovil","pasajes","colegiaturas","vestido","medico_medicinas","muebles_hogar","creditos_personales","otros_gastos"]
     _doc_table(doc, [(LABELS[k], money(d.get(k)) if d.get(k) not in (None, "") else "") for k in ekeys])
 
+    extras = p.get("extra_expenses") or []
+    extras_validos = [
+        x for x in extras
+        if _num(x.get("monto_mensual"), 0.0) > 0
+        or str(x.get("concepto") or "").strip()
+        or str(x.get("detalle") or "").strip()
+    ]
+    if extras_validos:
+        doc.add_heading("Gastos adicionales o apoyos especiales", 2)
+        t = doc.add_table(rows=1, cols=3)
+        t.style = "Table Grid"
+        for i, header in enumerate(("Concepto", "Monto mensual", "Detalle")):
+            t.rows[0].cells[i].text = header
+        for row in extras_validos:
+            cc = t.add_row().cells
+            cc[0].text = str(row.get("concepto", ""))
+            cc[1].text = money(row.get("monto_mensual"))
+            cc[2].text = str(row.get("detalle", ""))
+
     doc.add_heading("7. Salud y contexto", 1)
     ckeys = ["servicio_medico","enfermedades_cronicas","tiempo_libre","observaciones","contexto_sociofamiliar","beca_actual_pct"]
     _doc_table(doc, [(LABELS[k], d.get(k, "")) for k in ckeys])
+
+    flags = c.get("context_flags") or []
+    if flags:
+        doc.add_heading("Aspectos para revisión humana", 2)
+        for flag in flags:
+            doc.add_paragraph(str(flag), style="List Bullet")
+        doc.add_paragraph(
+            "Estas observaciones son descriptivas y sirven como apoyo para la revisión del caso. "
+            "No sustituyen la valoración profesional ni determinan por sí solas la cuota final."
+        )
 
     doc.add_heading("8. Indicadores socioeconómicos", 1)
     _doc_table(
