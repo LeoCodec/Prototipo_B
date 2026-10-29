@@ -7,6 +7,7 @@ from app.extensions import db
 from app.models.study import Study
 from app.services.institutional_form_service import delete_form,load_form,save_form
 from app.services.institutional_export_service import build_bulk_excel,build_case_excel,build_case_word
+from app.services.voice_intake_service import interpret_dictation
 
 institutional_bp=Blueprint("institutional",__name__,url_prefix="/estudios")
 
@@ -34,6 +35,16 @@ def form(study_id):
 @institutional_bp.post("/<int:study_id>/guardar")
 def save(study_id):
     s=Study.query.get_or_404(study_id);p=save_form(current_app.instance_path,study_id,request.get_json(silent=True) or {});_sync(s,p);return jsonify(ok=True,updated_at=p.get("updated_at"),calculation=p.get("calculation",{}),maps_url=p.get("maps_url",""),maps_static_url=p.get("maps_static_url",""))
+
+@institutional_bp.post("/<int:study_id>/dictado")
+def dictation(study_id):
+    Study.query.get_or_404(study_id)
+    body=request.get_json(silent=True) or {}
+    speech=str(body.get("text") or "").strip()
+    if not speech:
+        return jsonify(ok=False,error="No se recibió texto."),400
+    result=interpret_dictation(speech[:15000])
+    return jsonify(ok=True,**result)
 
 @institutional_bp.get("/<int:study_id>/preview")
 def preview(study_id):

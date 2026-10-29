@@ -3,6 +3,26 @@
 {% block content %}
 <section class="page-title-card"><div><span class="eyebrow">EXPEDIENTE {{ study.folio }}</span><h1>Formulario de estudio socioecon&oacute;mico</h1><p>Capture manualmente la informaci&oacute;n. Los cambios se guardan autom&aacute;ticamente.</p></div><span class="pilot-chip" id="saveState"><span class="pilot-dot"></span> Listo</span></section>
 <form id="studyForm" autocomplete="off">
+<section class="section" id="voiceIntake" data-dictation-url="{{ url_for('institutional.dictation', study_id=study.id) }}">
+<article class="review-card voice-card">
+<span class="eyebrow">CAPTURA ASISTIDA POR VOZ</span>
+<h2>Dictar el caso</h2>
+<p>Describa el caso con sus propias palabras. Después revise la transcripción y pulse <strong>Interpretar y rellenar</strong>.</p>
+<div class="voice-actions">
+<button class="btn btn-primary" type="button" id="voiceStart">Dictar caso</button>
+<button class="btn" type="button" id="voiceStop" disabled>Detener</button>
+<button class="btn" type="button" id="voiceInterpret">Interpretar y rellenar</button>
+</div>
+<label class="full-label">Transcripción del dictado
+<textarea id="voiceTranscript" name="dictado_original" rows="6" placeholder="Ejemplo: El alumno José López tiene 7 años. La madre Ana López es responsable y aporta 6500. Agua 450 bimestral. Renta 3000 mensual."></textarea>
+</label>
+<label class="voice-check"><input type="checkbox" id="voiceOverwrite"> Permitir que el dictado sobrescriba campos que ya tienen información.</label>
+<p id="voiceStatus" class="muted">El micrófono se activa únicamente al presionar el botón.</p>
+<div id="voiceDetected" class="voice-result"></div>
+<div id="voiceWarnings" class="voice-warning"></div>
+<p class="voice-privacy"><strong>Privacidad:</strong> el sistema no guarda audio. El reconocimiento depende del navegador y algunos navegadores pueden procesar el audio mediante un servicio del proveedor. Use esta función únicamente con autorización.</p>
+</article>
+</section>
 {% macro input(name,label,type='text',step='') -%}<label>{{ label|safe }}<input name="{{ name }}" type="{{ type }}"{% if step %} step="{{ step }}"{% endif %}></label>{%- endmacro %}
 <section class="section"><article class="review-card"><span class="eyebrow">1 &middot; SOLICITUD Y ALUMNO</span><h2>Datos generales del alumno</h2><div class="form-grid"><label>Tipo de solicitud<select name="solicitud_tipo"><option></option><option>Nueva</option><option>Renovaci&oacute;n</option></select></label><label>Turno<select name="turno"><option></option><option>Matutino</option><option>Vespertino</option></select></label>{{ input('grado','Grado que solicita') }}{{ input('fecha','Fecha de entrevista','date') }}{{ input('nombre_alumno','Nombre') }}{{ input('apellido_paterno_alumno','Apellido paterno') }}{{ input('apellido_materno_alumno','Apellido materno') }}{{ input('fecha_nacimiento','Fecha de nacimiento','date') }}{{ input('edad','Edad','number') }}{{ input('telefono','Tel&eacute;fono') }}{{ input('celular','Celular') }}</div><h3>Domicilio</h3><div class="form-grid">{{ input('calle','Calle') }}{{ input('numero','N&uacute;mero') }}{{ input('colonia','Colonia') }}{{ input('codigo_postal','C&oacute;digo postal') }}{{ input('estado','Estado') }}</div></article></section>
 <section class="section"><article class="review-card"><span class="eyebrow">2 &middot; SOLICITANTE</span><h2>Datos de quien solicita la beca</h2><div class="form-grid">{{ input('solicitante_nombre','Nombre completo') }}{{ input('solicitante_parentesco','Parentesco con el alumno') }}{{ input('solicitante_edad','Edad','number') }}{{ input('solicitante_domicilio','Domicilio') }}{{ input('solicitante_telefono','Tel&eacute;fono') }}{{ input('solicitante_celular','Celular') }}{{ input('solicitante_escolaridad','Escolaridad') }}{{ input('solicitante_ocupacion','Ocupaci&oacute;n') }}{{ input('solicitante_trabajo','Nombre y domicilio del trabajo') }}{{ input('solicitante_trabajo_telefono','Tel&eacute;fono del trabajo') }}{{ input('solicitante_correo','Correo electr&oacute;nico','email') }}</div><label class="full-label">Raz&oacute;n por la cual solicita ayuda financiera<textarea name="razon_apoyo" rows="4"></textarea></label></article></section>
@@ -29,7 +49,8 @@ implantes, terapias, tratamientos, pagos extraordinarios u otros apoyos.
 <thead>
 <tr>
 <th>Concepto</th>
-<th>Monto mensual (MXN)</th>
+<th>Monto capturado (MXN)</th>
+<th>Periodicidad</th>
 <th>Detalle / motivo</th>
 <th></th>
 </tr>
@@ -87,7 +108,17 @@ padding-left:20px
 }
 .map-fields{
 margin:12px 0
-}@media(max-width:900px){.form-grid,.metric-grid,.map-card{grid-template-columns:1fr}.money-grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.money-grid{grid-template-columns:1fr}}</style>
+}
+.voice-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.voice-check{display:flex;gap:9px;align-items:center;margin-top:12px;font-weight:700}
+.voice-check input{width:18px;height:18px}
+.voice-result,.voice-warning{margin-top:12px;padding:12px 14px;border-radius:12px}
+.voice-result:empty,.voice-warning:empty{display:none}
+.voice-result{background:#f3f8ea;border:1px solid #d8dfd2}
+.voice-warning{background:#fff8e6;border:1px solid #ead59b}
+.voice-privacy{font-size:.9rem;margin-top:14px;padding:12px;border-left:4px solid #77a836;background:#f7f9f4}
+.period-select{margin-top:7px}
+@media(max-width:900px){.form-grid,.metric-grid,.map-card{grid-template-columns:1fr}.money-grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.money-grid{grid-template-columns:1fr}}</style>
 <script>
 const initial={{ payload|tojson }},form=document.getElementById('studyForm'),state=document.getElementById('saveState'),familyBody=document.getElementById('familyRows'),incomeBody=document.getElementById('incomeRows'),extraBody=document.getElementById('extraExpenseRows'),familyNames=document.getElementById('familyNames');let timer=null,saving=false;
 function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;')}
@@ -105,8 +136,17 @@ updateFamilyMeta()
 function addIncome(r={}){const tr=document.createElement('tr');tr.innerHTML=`<td><input data-k="integrante" list="familyNames" value="${esc(r.integrante)}"></td><td><input data-k="lugar_trabajo" value="${esc(r.lugar_trabajo)}"></td><td><input data-k="antiguedad" value="${esc(r.antiguedad)}"></td><td><input data-k="puesto" value="${esc(r.puesto)}"></td><td><input data-k="ingreso_mensual" type="number" step="0.01" value="${esc(r.ingreso_mensual)}"></td><td><input data-k="aportacion_mensual" type="number" step="0.01" value="${esc(r.aportacion_mensual)}"></td><td><button type="button" class="btn remove-row">&times;</button></td>`;incomeBody.appendChild(tr)}
 function addExtraExpense(r={}){
 const tr=document.createElement('tr');
+const period=r.periodicidad||'mensual';
 tr.innerHTML=`<td><input data-k="concepto" value="${esc(r.concepto)}" placeholder="Ej. Pago de implante"></td>
-<td><input data-k="monto_mensual" type="number" step="0.01" value="${esc(r.monto_mensual)}"></td>
+<td><input data-k="monto_mensual" type="number" step="0.01" value="${esc(r.monto_capturado??r.monto_mensual)}"></td>
+<td><select data-k="periodicidad">
+<option value="mensual" ${period==='mensual'?'selected':''}>Mensual</option>
+<option value="bimestral" ${period==='bimestral'?'selected':''}>Bimestral</option>
+<option value="trimestral" ${period==='trimestral'?'selected':''}>Trimestral</option>
+<option value="cuatrimestral" ${period==='cuatrimestral'?'selected':''}>Cuatrimestral</option>
+<option value="semestral" ${period==='semestral'?'selected':''}>Semestral</option>
+<option value="anual" ${period==='anual'?'selected':''}>Anual</option>
+</select></td>
 <td><input data-k="detalle" value="${esc(r.detalle)}" placeholder="Mensualidad, tratamiento, apoyo, etc."></td>
 <td><button type="button" class="btn remove-row">&times;</button></td>`;
 extraBody.appendChild(tr)
@@ -153,4 +193,5 @@ function schedule(){clearTimeout(timer);state.textContent='Cambios pendientes';t
 const d=initial.data||{};for(const el of form.elements){if(el.name&&d[el.name]!==undefined&&d[el.name]!==null)el.value=d[el.name]}(initial.family_members||[]).forEach(addFamily);if(!familyBody.children.length)addFamily();(initial.income_rows||[]).forEach(addIncome);if(!incomeBody.children.length)addIncome();(initial.extra_expenses||[]).forEach(addExtraExpense);updateFamilyMeta();render(initial.calculation||{},initial.maps_url||'',initial.maps_static_url||'');
 form.addEventListener('input',schedule);form.addEventListener('change',schedule);document.getElementById('addFamily').onclick=()=>{addFamily();schedule()};document.getElementById('addIncome').onclick=()=>{addIncome();schedule()};document.getElementById('addExtraExpense').onclick=()=>{addExtraExpense();schedule()};document.addEventListener('click',e=>{if(e.target.classList.contains('remove-row')){e.target.closest('tr').remove();updateFamilyMeta();schedule()}});familyBody.addEventListener('input',updateFamilyMeta);familyBody.addEventListener('change',updateFamilyMeta);document.getElementById('generatePreview').onclick=async()=>{const j=await save();if(j)document.querySelector('.preview-panel').scrollIntoView({behavior:'smooth',block:'center'})};
 </script>
+<script src="{{ url_for('static', filename='js/institutional_voice.js') }}"></script>
 {% endblock %}

@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 import os, secrets
 from flask import Blueprint,redirect,render_template,request,session,url_for,flash
 
@@ -36,7 +36,7 @@ def install_security(app):
         response.headers.setdefault("X-Content-Type-Options","nosniff")
         response.headers.setdefault("X-Frame-Options","DENY")
         response.headers.setdefault("Referrer-Policy","no-referrer")
-        response.headers.setdefault("Permissions-Policy","camera=(self), microphone=(), geolocation=()")
+        response.headers.setdefault("Permissions-Policy","camera=(self), microphone=(self), geolocation=()")
         if request.path.startswith(("/studies","/capture","/review","/fields","/analysis","/reports","/cases")):
             response.headers["Cache-Control"]="no-store, no-cache, must-revalidate, private"
             response.headers["Pragma"]="no-cache"; response.headers["Expires"]="0"

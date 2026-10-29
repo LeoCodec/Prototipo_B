@@ -7,6 +7,20 @@ from urllib.parse import quote_plus
 ANNUAL_EXPENSE_FIELDS=("predial_anual","gastos_anuales","vacaciones_anual")
 MONTHLY_EXPENSE_FIELDS=("renta","luz","agua","telefono_gasto","gas","alimentos","automovil","pasajes","colegiaturas","vestido","medico_medicinas","muebles_hogar","creditos_personales","otros_gastos")
 
+
+PERIOD_MONTH_FACTORS={
+    "mensual":1.0,
+    "bimestral":1.0/2.0,
+    "trimestral":1.0/3.0,
+    "cuatrimestral":1.0/4.0,
+    "semestral":1.0/6.0,
+    "anual":1.0/12.0,
+}
+
+def _period(value,default="mensual"):
+    value=str(value or "").strip().lower()
+    return value if value in PERIOD_MONTH_FACTORS else default
+
 def _file(instance_path,study_id):
     p=Path(instance_path)/"institutional_forms"
     p.mkdir(parents=True,exist_ok=True)
@@ -74,36 +88,48 @@ def _expenses_monthly(data,extra_expenses=None):
     extras=[]
 
     for k in MONTHLY_EXPENSE_FIELDS:
-        v=max(_number(data.get(k),0.0),0.0)
-        detail[k]=v
-        total+=v
+        raw=max(_number(data.get(k),0.0),0.0)
+        period=_period(data.get(k+"_periodo"),"mensual")
+        monthly=raw*PERIOD_MONTH_FACTORS[period]
+        detail[k]=monthly
+        detail[k+"_capturado"]=raw
+        detail[k+"_periodo"]=period
+        total+=monthly
 
     for k in ANNUAL_EXPENSE_FIELDS:
-        anual=max(_number(data.get(k),0.0),0.0)
-        mensual=anual/12.0
-        detail[k]=anual
-        detail[k+"_mensual_equiv"]=mensual
-        total+=mensual
+        raw=max(_number(data.get(k),0.0),0.0)
+        period=_period(data.get(k+"_periodo"),"anual")
+        monthly=raw*PERIOD_MONTH_FACTORS[period]
+        detail[k]=raw
+        detail[k+"_capturado"]=raw
+        detail[k+"_periodo"]=period
+        detail[k+"_mensual_equiv"]=monthly
+        total+=monthly
 
     for row in extra_expenses or []:
         if not isinstance(row,dict):
             continue
 
         concepto=str(row.get("concepto") or "").strip()
-        monto=max(_number(row.get("monto_mensual"),0.0),0.0)
+        raw=max(_number(row.get("monto_capturado",row.get("monto_mensual")),0.0),0.0)
+        period=_period(row.get("periodicidad"),"mensual")
+        monthly=raw*PERIOD_MONTH_FACTORS[period]
         detalle=str(row.get("detalle") or "").strip()
 
-        if not concepto and monto<=0 and not detalle:
+        if not concepto and raw<=0 and not detalle:
             continue
 
         extras.append({
             "concepto":concepto or "Gasto adicional",
-            "monto_mensual":round(monto,2),
+            "monto_capturado":round(raw,2),
+            "periodicidad":period,
+            "monto_mensual":round(monthly,2),
             "detalle":detalle
         })
-        total+=monto
+        total+=monthly
 
     return total,detail,extras
+
 
 def _context_flags(data,calc,extras):
     flags=[]
